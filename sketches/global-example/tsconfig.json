@@ -1,0 +1,8 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "types": ["p5"]
+    },
+    "include": ["sketch.ts"],
+    "exclude": ["node_modules"]
+}
