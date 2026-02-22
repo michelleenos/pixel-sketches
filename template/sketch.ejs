@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title><%= htmlWebpackPlugin.options.title %></title>
+</head>
+<body>
+
+	<div class="sketchinfo">
+		<button class="sketchinfo__toggle toggle" aria-label="toggle sketch info" aria-expanded="false">
+			<div class="toggle__arrow"></div>
+		</button>
+		<div class="sketchinfo__content-wrap">
+			<h1 class="sketchinfo__title"><%= htmlWebpackPlugin.options.title %></h1>
+			<div class="sketchinfo__content">
+				<table class="sketchinfo__meta-table">
+					<% if (created) { %>
+						<tr>
+							<th scope="row">created</th>
+							<td><%= created %></td>
+						</tr>
+					<% } %>
+					<% if (lastUpdated) { %>
+						<tr>
+							<th scope="row">last updated</th>
+							<td><%= lastUpdated %></td>
+						</tr>
+					<% } %>
+				</table>
+
+				<% if (description) { %>
+					<div class="sketchinfo__description">
+						<%= description %>
+					</div>
+				<% } %>
+
+				<div class="sketchinfo__link-wrap">
+					<a href="/" class="sketchinfo__back">back</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<% if (useP5) { %>
+		<script src="https://cdn.jsdelivr.net/npm/p5@2.2.1/lib/p5.min.js"></script>
+	<% } %>
+</body>
+</html>

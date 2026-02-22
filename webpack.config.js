@@ -18,7 +18,8 @@ const config = {
     mode: isProduction ? 'production' : 'development',
     entry: {
         ...sketchConfigs.entries,
-        style: path.resolve(__dirname, 'shared/shared-style.scss'),
+        sketchinfo: path.resolve(__dirname, 'template/sketchinfo.ts'),
+        style: path.resolve(__dirname, 'template/shared-style.scss'),
     },
     module: {
         rules: [

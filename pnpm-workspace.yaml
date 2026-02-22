@@ -1,2 +1,3 @@
 packages:
     - 'sketches/*'
+    - 'shared/utils'

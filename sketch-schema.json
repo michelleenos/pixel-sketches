@@ -10,6 +10,17 @@
         },
         "useP5": {
             "type": "boolean"
+        },
+        "created": {
+            "type": "string",
+            "format": "yyyy-mm-dd"
+        },
+        "lastUpdated": {
+            "type": "string",
+            "format": "yyyy-mm-dd"
+        },
+        "description": {
+            "type": "string"
         }
     }
 }

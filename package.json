@@ -6,7 +6,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "NODE_ENV=production webpack",
-        "dev": "webpack serve --open"
+        "dev": "webpack serve"
     },
     "keywords": [],
     "author": "",
@@ -32,6 +32,7 @@
         "webpack-remove-empty-scripts": "^1.1.1"
     },
     "dependencies": {
+        "lil-gui": "^0.21.0",
         "mish-bainrow": "^1.0.21",
         "p5": "^2.2.1"
     }

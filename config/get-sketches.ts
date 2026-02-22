@@ -3,16 +3,17 @@ import path from 'path'
 import fs from 'fs/promises'
 import HTMLWebpackPlugin from 'html-webpack-plugin'
 import { fileURLToPath } from 'url'
+import type { SketchConfigJson } from './sketch-config-type'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const htmlConfigShared: HTMLWebpackPlugin.Options = {
-    template: 'template.ejs',
+    template: 'template/sketch.ejs',
     minify: false,
 }
 
-const sharedChunks = ['style']
+const sharedChunks = ['style', 'sketchinfo']
 
 interface SketchConfigOpts {
     slug: string
@@ -45,7 +46,7 @@ async function getSketchConfig(file: string): Promise<SketchConfigOpts> {
         console.error(`file doesn't exist: ${tsFilePath}`)
     }
 
-    const sketchConfig = JSON.parse(await fs.readFile(file, 'utf-8'))
+    const sketchConfig = JSON.parse(await fs.readFile(file, 'utf-8')) as SketchConfigJson
     const slug = sketchDir.split('/').reverse()[0] as string
 
     return {
@@ -57,6 +58,9 @@ async function getSketchConfig(file: string): Promise<SketchConfigOpts> {
             chunks: [slug, ...sharedChunks],
             templateParameters: {
                 useP5: sketchConfig.useP5 || false,
+                created: sketchConfig.created,
+                lastUpdated: sketchConfig.lastUpdated,
+                description: sketchConfig.description,
             },
             ...htmlConfigShared,
         },

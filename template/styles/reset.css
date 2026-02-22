@@ -1,0 +1,73 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+}
+
+body {
+    line-height: 1.5;
+    font-size: 1rem;
+}
+
+/* https://systemfontstack.com/ */
+body {
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        avenir next,
+        avenir,
+        segoe ui,
+        helvetica neue,
+        helvetica,
+        Cantarell,
+        Ubuntu,
+        roboto,
+        noto,
+        arial,
+        sans-serif;
+}
+
+/* Turn off subpixel antialiasing (used by default on many MacOS browsers) */
+body {
+    -webkit-font-smoothing: antialiased;
+}
+
+/* balance text on headings (where supported, the algorithm will try to make lines of text in headings of equal length) */
+h1,
+h2,
+h3,
+h4 {
+    text-wrap: balance;
+}
+
+/* Img and video defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+/* Make form controls inherit type styles (browser doesn't do this by default) */
+input,
+button,
+textarea,
+select {
+    font: inherit;
+}
+
+/* Make textareas larger (if they don't have rows attribute) */
+textarea:not([rows]) {
+    min-height: 10em;
+}
+
+/* improve text overflow */
+* {
+    overflow-wrap: break-word;
+}

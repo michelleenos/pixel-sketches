@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      lil-gui:
+        specifier: ^0.21.0
+        version: 0.21.0
       mish-bainrow:
         specifier: ^1.0.21
         version: 1.0.21
@@ -64,7 +67,13 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(webpack@5.105.2)
 
-  sketches/001-tiles: {}
+  shared/utils: {}
+
+  sketches/001-tiles:
+    dependencies:
+      utils:
+        specifier: workspace:*
+        version: link:../../shared/utils
 
 packages:
 
@@ -1373,6 +1382,9 @@ packages:
 
   libtess@1.2.2:
     resolution: {integrity: sha512-Nps8HPeVVcsmJxUvFLKVJcCgcz+1ajPTXDVAVPs6+giOQP4AHV31uZFFkh+CKow/bkB7GbZWKmwmit7myaqDSw==}
+
+  lil-gui@0.21.0:
+    resolution: {integrity: sha512-tpvxN7v1GvE/Tv+GRopfOp0W7fVEjF4PltkuX8vOCIfim22rD1ztvfkoEMcv9lzQeuNUSeIrUmUjBwmlW/oUew==}
 
   loader-runner@4.3.1:
     resolution: {integrity: sha512-IWqP2SCPhyVFTBtRcgMHdzlf9ul25NwaFx4wCEH/KjAXuuHY4yNjvPXsBokp8jCB936PyWRaPKUNh8NvylLp2Q==}
@@ -3552,6 +3564,8 @@ snapshots:
       shell-quote: 1.8.3
 
   libtess@1.2.2: {}
+
+  lil-gui@0.21.0: {}
 
   loader-runner@4.3.1: {}
 
