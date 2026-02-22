@@ -1,7 +1,7 @@
 import { getPaletteVariants, type PaletteVariant } from 'mish-bainrow'
 import p5 from 'p5'
 import GUI from 'lil-gui'
-import { random } from 'utils'
+import { random } from '../../packages/utils'
 
 const palettes = getPaletteVariants({
     minColors: 3,

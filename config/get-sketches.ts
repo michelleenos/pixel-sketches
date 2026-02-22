@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const htmlConfigShared: HTMLWebpackPlugin.Options = {
-    template: 'template/sketch.ejs',
+    template: 'shared/sketch.ejs',
     minify: false,
 }
 
