@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import WebpackRemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts'
 import { getSketchConfigs } from './config/get-sketches.ts'
+import CopyPlugin from 'copy-webpack-plugin'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -18,6 +19,7 @@ const config = {
     mode: isProduction ? 'production' : 'development',
     entry: {
         ...sketchConfigs.entries,
+        galleryIndex: path.resolve(__dirname, 'shared/gallery-index.ts'),
         sketchinfo: path.resolve(__dirname, 'shared/sketchinfo.ts'),
         style: path.resolve(__dirname, 'shared/shared-style.scss'),
     },
@@ -51,10 +53,30 @@ const config = {
     },
     plugins: [
         ...sketchConfigs.htmlConfigs.map((c) => new HtmlWebpackPlugin(c)),
+        new HtmlWebpackPlugin({
+            title: 'Code Art Gallery',
+            filename: 'index.html',
+            template: path.resolve(__dirname, 'shared/index.ejs'),
+            chunks: ['galleryIndex', 'style'],
+            templateParameters: {
+                sketches: sketchConfigs.sketchJsons,
+            },
+        }),
         new MiniCssExtractPlugin({
             filename: 'style.css',
         }),
         new WebpackRemoveEmptyScriptsPlugin(),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'shared/sketches-info.json'),
+
+                    transform() {
+                        return JSON.stringify(sketchConfigs.sketchJsons)
+                    },
+                },
+            ],
+        }),
     ],
     devtool: isProduction ? false : 'cheap-source-map',
 }
