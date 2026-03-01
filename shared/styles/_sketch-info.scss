@@ -55,6 +55,10 @@
 
     &__description {
         margin-top: 1rem;
+
+        p:not(:last-child) {
+            margin-bottom: 0.5em;
+        }
     }
 
     &__link-wrap {

@@ -4,7 +4,9 @@
     "description": "Shared utility functions",
     "main": "index.ts",
     "exports": {
-        ".": "./index.ts"
+        ".": "./index.ts",
+        "./canvas": "./canvas.ts",
+        "./code-art-types": "./code-art-types.ts"
     },
     "keywords": [],
     "author": "",

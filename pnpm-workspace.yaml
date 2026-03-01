@@ -1,3 +1,4 @@
 packages:
     - 'sketches/*'
     - 'packages/utils'
+    - 'packages/lilgui-extra'

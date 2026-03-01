@@ -1,0 +1,8 @@
+{
+    "$schema": "../../sketch-schema.json",
+    "title": "petal curves",
+    "created": "2023-04",
+    "lastUpdated": "2026",
+    "useP5": false,
+    "description": "<p>Many bezier curves are drawn, making a petal shape. The control points move along a <a href='https://en.wikipedia.org/wiki/Lissajous_curve' target='_blank'>lissajous curve</a>; the parameters of this can be adjusted with the controls.</p><p>Adjusting fps will adapt to the frame rate of your machine and ensure that `fps` number of lines are drawn per second.</p>"
+}

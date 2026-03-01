@@ -8,6 +8,7 @@ import { styleText } from 'util'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+console.log({ __filename, __dirname })
 const htmlConfigShared: HTMLWebpackPlugin.Options = {
     template: 'shared/sketch.ejs',
     minify: false,
@@ -21,6 +22,7 @@ interface SketchConfigJson {
     created?: string
     lastUpdated?: string
     description?: string
+    skip?: boolean
 }
 
 interface SketchConfigOpts {
@@ -41,7 +43,8 @@ export async function getSketchConfigs(sketchesDir: string) {
 
     for (const file of items) {
         try {
-            const configs = await getSketchConfig(file)
+            const configs = await getSketchConfig(file, sketchesDir)
+            if (configs.sketchJson.skip) continue
             entries[configs.slug] = configs.filePath
             htmlConfigs.push(configs.htmlConfig)
             sketchJsons.push(configs.sketchJson)
@@ -54,7 +57,7 @@ export async function getSketchConfigs(sketchesDir: string) {
     return { entries, htmlConfigs, sketchJsons }
 }
 
-async function getSketchConfig(file: string): Promise<SketchConfigOpts> {
+async function getSketchConfig(file: string, sketchesDir: string): Promise<SketchConfigOpts> {
     const sketchDir = path.dirname(file)
     const tsFilePath = path.resolve(__dirname, `${sketchDir}/sketch.ts`)
 
@@ -65,7 +68,10 @@ async function getSketchConfig(file: string): Promise<SketchConfigOpts> {
     }
 
     const sketchConfig = JSON.parse(await fs.readFile(file, 'utf-8')) as SketchConfigJson
-    const slug = sketchDir.split('/').reverse()[0] as string
+    const sketchPath = path.relative(sketchesDir, sketchDir)
+    // console.log(sketchPath)
+    // const slug = sketchDir.split('/').reverse()[0] as string
+    const slug = sketchPath
 
     return {
         slug,

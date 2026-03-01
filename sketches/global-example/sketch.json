@@ -1,5 +1,6 @@
 {
     "$schema": "../../sketch-schema.json",
     "title": "Tiles",
-    "useP5": true
+    "useP5": true,
+    "skip": true
 }
