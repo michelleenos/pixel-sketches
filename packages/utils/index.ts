@@ -1,5 +1,6 @@
 export * from './math'
 export * from './canvas'
+export * from './save-canvas'
 export * from './code-art-types'
 export * from './loop'
 export * from './loop-fps-demo'

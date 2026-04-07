@@ -1,4 +1,4 @@
-interface CanvasOpts {
+interface CnvsOpts {
     append?: boolean | string
     className?: string
     autoResize?: boolean
@@ -7,7 +7,7 @@ interface CanvasOpts {
     pixelRatio?: number
 }
 
-export class Canvas {
+export class Cnvs {
     canvas: HTMLCanvasElement
     ctx: CanvasRenderingContext2D
     _pixelRatio: number
@@ -21,7 +21,7 @@ export class Canvas {
         width,
         height,
         pixelRatio,
-    }: CanvasOpts = {}) {
+    }: CnvsOpts = {}) {
         this.canvas = document.createElement('canvas')
         if (className) this.canvas.classList.add(className)
         this.ctx = this.canvas.getContext('2d')!
@@ -77,5 +77,19 @@ export class Canvas {
     onWindowResize = () => {
         this._pixelRatio = Math.min(window.devicePixelRatio, 2)
         this.setSize(window.innerWidth, window.innerHeight)
+    }
+
+    save(fileName = 'canvas', type: 'png' | 'jpeg' | 'webp' = 'png', quality?: number) {
+        const dataUrl = this.canvas.toDataURL(`image/${type}`, quality)
+        const link = document.createElement('a')
+        link.href = dataUrl
+        link.download = `${fileName}.${type}`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    }
+
+    clear = () => {
+        this.ctx.clearRect(0, 0, this._width, this._height)
     }
 }

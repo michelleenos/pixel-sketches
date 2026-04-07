@@ -5,7 +5,7 @@
 ## sketches to add
 
 - [ ] circlewaves - other designs (0212)
-- [ ] flower petals (0404 + 0407)
+- [x] flower petals (0404 + 0407)
 - [ ] swarm (0427)
 - [ ] noisy circles
 - [ ] "mathy" circles (1012)
