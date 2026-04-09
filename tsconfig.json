@@ -20,6 +20,6 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true
     },
-    "include": ["config", "sketches"],
+    "include": ["config", "sketches", "packages/utils/vec2.ts", "packages/utils/vec2.test.ts"],
     "exclude": ["sketches/global-example"]
 }

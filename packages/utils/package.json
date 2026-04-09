@@ -8,8 +8,14 @@
         "./canvas": "./canvas.ts",
         "./code-art-types": "./code-art-types.ts"
     },
+    "scripts": {
+        "test": "vitest"
+    },
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "packageManager": "pnpm@10.13.1"
+    "packageManager": "pnpm@10.13.1",
+    "devDependencies": {
+        "vitest": "^4.1.3"
+    }
 }

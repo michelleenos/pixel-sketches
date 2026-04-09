@@ -54,3 +54,7 @@ export function round(num: number, precision = 1) {
     const factor = Math.pow(10, precision)
     return Math.round(num * factor) / factor
 }
+
+export function clamp(num: number, min: number, max: number) {
+    return Math.max(Math.min(num, max), min)
+}

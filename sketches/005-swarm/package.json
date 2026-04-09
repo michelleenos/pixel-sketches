@@ -1,17 +1,14 @@
 {
-    "name": "004-petal-curves",
+    "name": "005-petal-curves",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
+    "scripts": {},
     "keywords": [],
     "author": "",
     "license": "ISC",
     "packageManager": "pnpm@10.13.1",
     "dependencies": {
-        "lilgui-extra": "workspace:*",
         "utils": "workspace:*"
     }
 }

@@ -1,19 +1,38 @@
 export class Loop {
     _id: number | null = null
+    _fps: number
+    _interval: number
+    _last: number = performance.now()
+    delta: number = 0
+    // deltaRatio: number = 0
     cb: FrameRequestCallback
 
-    constructor(cb: FrameRequestCallback, { paused = false } = {}) {
+    constructor(cb: FrameRequestCallback, { paused = false, fps = 60 } = {}) {
         this.cb = cb
+        this._fps = fps
+        this._interval = 1000 / this._fps
         if (!paused) this.start()
     }
 
     _animation(t: DOMHighResTimeStamp) {
         this._id = requestAnimationFrame(this._animation.bind(this))
+        this.delta = t - this._last
+        // this.deltaRatio = this.delta / this._interval
+        this._last = t
         this.cb(t)
     }
 
     get looping() {
         return this._id !== null
+    }
+
+    set fps(val: number) {
+        this._fps = val
+        this._interval = 1000 / val
+    }
+
+    get fps() {
+        return this._fps
     }
 
     stop() {
@@ -24,6 +43,7 @@ export class Loop {
 
     start() {
         if (this.looping) return
+        this._last = performance.now()
         this._id = requestAnimationFrame(this._animation.bind(this))
     }
 }
