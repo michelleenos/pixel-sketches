@@ -17,5 +17,8 @@
     "packageManager": "pnpm@10.13.1",
     "devDependencies": {
         "vitest": "^4.1.3"
+    },
+    "dependencies": {
+        "nanoevents": "^9.1.0"
     }
 }

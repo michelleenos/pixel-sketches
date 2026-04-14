@@ -94,7 +94,7 @@ function draw(t: number) {
     }
 
     const now = t
-    if (mouse.mouseIsDown && now - lastParticleSpawnAt >= spawnInterval) {
+    if (mouse.down && now - lastParticleSpawnAt >= spawnInterval) {
         const p = new Particle(mouse.pos.x, mouse.pos.y)
         particles.push(p)
         lastParticleSpawnAt = now
