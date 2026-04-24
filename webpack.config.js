@@ -26,7 +26,9 @@ const plugins = [
         template: path.resolve(__dirname, 'shared/index.ejs'),
         chunks: ['galleryIndex', 'style'],
         templateParameters: {
-            sketches: sketchConfigs.sketchJsons,
+            sketches: sketchConfigs.sketchJsons.sort((a, b) => {
+                return a.slug - b.slug
+            }),
         },
     }),
     new MiniCssExtractPlugin({

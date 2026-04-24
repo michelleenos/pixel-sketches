@@ -34,7 +34,7 @@ export class Cnvs {
             document.querySelector(append)?.appendChild(this.canvas)
         }
 
-        if (autoResize) window.addEventListener('resize', this.onWindowResize)
+        if (autoResize) window.addEventListener('resize', this._onWindowResize)
     }
 
     get width() {
@@ -74,7 +74,7 @@ export class Cnvs {
         this.ctx.scale(this._pixelRatio, this._pixelRatio)
     }
 
-    onWindowResize = () => {
+    _onWindowResize = () => {
         this._pixelRatio = Math.min(window.devicePixelRatio, 2)
         this.setSize(window.innerWidth, window.innerHeight)
     }

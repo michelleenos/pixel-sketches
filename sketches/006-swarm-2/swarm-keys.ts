@@ -67,7 +67,8 @@ export function swarmKeys(P: SwarmParams) {
             writeText(',           = reset parameters')
             writeText('/           = hide parameters')
         } else {
-            ctx.translate(10, height - 20)
+            ctx.translate(10, height - 40)
+            writeText('click + drag to add')
             writeText(`press / to view options`)
         }
 

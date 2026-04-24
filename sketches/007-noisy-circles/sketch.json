@@ -1,0 +1,6 @@
+{
+    "$schema": "../../sketch-schema.json",
+    "title": "noisy circles",
+    "useP5": true,
+    "created": "2023-05-15"
+}

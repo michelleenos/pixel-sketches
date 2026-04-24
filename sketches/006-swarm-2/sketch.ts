@@ -1,8 +1,6 @@
-import { clamp, Cnvs, lerp, Loop, map, MouseTracker, random, Vec2 } from 'utils'
-import { getAllPairs, getPaletteVariants } from 'mish-bainrow'
-import { swarmKeys } from './swarm-keys'
 import chroma from 'chroma-js'
-import { GuiExtra } from '../../packages/lilgui-extra'
+import { clamp, Cnvs, Loop, map, MouseTracker, random, Vec2 } from 'utils'
+import { swarmKeys } from './swarm-keys'
 
 // const pairs = getAllPairs()
 // let colors = random(pairs)

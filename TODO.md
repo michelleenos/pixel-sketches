@@ -6,10 +6,10 @@
 
 - [ ] circlewaves - other designs (0212)
 - [x] flower petals (0404 + 0407)
-- [ ] swarm (0427)
-- [ ] noisy circles
+- [x] swarm (0427)
+- [x] noisy circles
 - [ ] "mathy" circles (1012)
-- [ ] screen/mandalas (1025)
+- [x] screen/mandalas (1025)
 - [ ] maybe flow field (1109)
 - [ ] more mandala type things (1112)
 - [ ] possibly something with drunkard's path
