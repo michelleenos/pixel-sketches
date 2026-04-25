@@ -43,19 +43,28 @@ h1,
     line-height: 1.1;
 }
 
+main {
+    position: relative;
+    min-height: 100vh;
+}
+
 canvas.sketch {
     position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
-    z-index: -1;
+    // z-index: -1;
     display: block;
+
+    &--centered {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
 }
 
 .lil-gui.lil-root > .lil-children > .lil-gui > .lil-children > .lil-gui > .lil-title {
     padding-left: calc(var(--folder-indent) * 0.5);
     border-left: 2px solid var(--widget-color);
 }
-// .lil-children .lil-children > .lil-gui > button.lil-title {
-// }

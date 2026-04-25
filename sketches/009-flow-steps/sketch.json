@@ -1,0 +1,7 @@
+{
+    "$schema": "../../sketch-schema.json",
+    "title": "flow field steps",
+    "useP5": true,
+    "created": "2026",
+    "description": "<p>Perlin noise flow field. Moving particles draw lines, layered on top of one another. The timer values essentially control the <code>z</code> input to the perlin noise function, which jumps by a certain number every <code>timeJumpInterval</code> ms.</p>"
+}

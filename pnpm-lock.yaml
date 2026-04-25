@@ -4,16 +4,23 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  mish-bainrow: link:../bainrow
+  canvas-frames: link:../canvas-frames
+
 importers:
 
   .:
     dependencies:
+      canvas-frames:
+        specifier: link:../canvas-frames
+        version: link:../canvas-frames
       lil-gui:
         specifier: ^0.21.0
         version: 0.21.0
       mish-bainrow:
-        specifier: ^1.0.21
-        version: 1.0.21
+        specifier: link:../bainrow
+        version: link:../bainrow
       p5:
         specifier: ^2.2.1
         version: 2.2.1
@@ -139,6 +146,24 @@ importers:
       '@types/chroma-js':
         specifier: ^3.1.2
         version: 3.1.2
+
+  sketches/007-noisy-circles:
+    dependencies:
+      utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  sketches/008-bursts:
+    dependencies:
+      utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  sketches/009-flowfield:
+    dependencies:
+      utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
 
 packages:
 
@@ -1837,9 +1862,6 @@ packages:
 
   minimalistic-assert@1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
-
-  mish-bainrow@1.0.21:
-    resolution: {integrity: sha512-eVVStEU+RuIrz0RqBM8N4t+Xe/zuabz0aTnuDX38yISFy1xRrAVZARk5OnlkCxWWWgCow1dAG3a/XzuibXzj4g==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -4426,8 +4448,6 @@ snapshots:
       webpack: 5.105.2(webpack-cli@6.0.1)
 
   minimalistic-assert@1.0.1: {}
-
-  mish-bainrow@1.0.21: {}
 
   mrmime@2.0.1: {}
 

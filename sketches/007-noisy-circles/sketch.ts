@@ -1,4 +1,3 @@
-import { getPaletteVariants, type PaletteVariant } from 'mish-bainrow'
 import p5 from 'p5'
 import GUI from 'lil-gui'
 

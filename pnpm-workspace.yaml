@@ -1,4 +1,8 @@
 packages:
-    - 'sketches/*'
-    - 'packages/utils'
-    - 'packages/lilgui-extra'
+  - sketches/*
+  - packages/utils
+  - packages/lilgui-extra
+
+overrides:
+  canvas-frames: link:../canvas-frames
+  mish-bainrow: link:../bainrow
