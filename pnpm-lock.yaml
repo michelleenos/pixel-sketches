@@ -159,8 +159,23 @@ importers:
         specifier: workspace:*
         version: link:../../packages/utils
 
-  sketches/009-flowfield:
+  sketches/009-flow-steps:
     dependencies:
+      utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  sketches/010-flow:
+    dependencies:
+      utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  sketches/011-edges:
+    dependencies:
+      lilgui-extra:
+        specifier: workspace:*
+        version: link:../../packages/lilgui-extra
       utils:
         specifier: workspace:*
         version: link:../../packages/utils

@@ -2,21 +2,19 @@ export interface TimerParams {
     timeJump?: number
     timeJumpInterval?: number
     type?: 'jump' | 'linear'
-    timeScale?: number
 }
 
 export const defaultTimerParams: Required<TimerParams> = {
     timeJump: 1000,
     timeJumpInterval: 2000,
     type: 'jump',
-    timeScale: 0.2,
 }
 
 export class Timer {
     realMs = 0
     timeVal = 0
     timeSinceJump = 0
-    timeScale: number
+    // timeScale: number
     timeJump: number
     timeJumpInterval: number
     type: 'jump' | 'linear'
@@ -26,11 +24,11 @@ export class Timer {
         this.realMs = time
         this.timeVal = time
 
-        const { timeJump, timeJumpInterval, type, timeScale } = { ...defaultTimerParams, ...params }
+        const { timeJump, timeJumpInterval, type } = { ...defaultTimerParams, ...params }
         this.timeJump = timeJump
         this.timeJumpInterval = timeJumpInterval
         this.type = type
-        this.timeScale = timeScale
+        // this.timeScale = timeScale
     }
 
     setFromNow() {
@@ -44,7 +42,7 @@ export class Timer {
         let ms = performance.now()
         if (this.type === 'linear') {
             this.realMs = ms
-            this.timeVal = ms * this.timeScale
+            this.timeVal = ms
             return
         }
 
@@ -53,7 +51,7 @@ export class Timer {
         this.realMs = ms
 
         if (this.timeSinceJump >= this.timeJumpInterval) {
-            this.timeVal += this.timeJump * this.timeScale
+            this.timeVal += this.timeJump
             this.timeSinceJump = this.timeSinceJump - this.timeJumpInterval
         }
     }

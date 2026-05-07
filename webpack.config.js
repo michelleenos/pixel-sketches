@@ -18,6 +18,15 @@ const __dirname = path.dirname(__filename)
 const sketchesDir = path.resolve(__dirname, './sketches')
 const sketchConfigs = await getSketchConfigs(sketchesDir)
 
+const sortedSketches = sketchConfigs.sketchJsons.sort((a, b) => {
+    if (a.slug.toUpperCase() < b.slug.toUpperCase()) {
+        return -1
+    }
+    return 1
+})
+
+console.log(sortedSketches)
+
 const plugins = [
     ...sketchConfigs.htmlConfigs.map((c) => new HtmlWebpackPlugin(c)),
     new HtmlWebpackPlugin({
@@ -26,9 +35,7 @@ const plugins = [
         template: path.resolve(__dirname, 'shared/index.ejs'),
         chunks: ['galleryIndex', 'style'],
         templateParameters: {
-            sketches: sketchConfigs.sketchJsons.sort((a, b) => {
-                return a.slug - b.slug
-            }),
+            sketches: sortedSketches,
         },
     }),
     new MiniCssExtractPlugin({
@@ -90,8 +97,13 @@ const config = {
         },
         runtimeChunk: 'single',
     },
+    // devServer: {
+    //     devMiddleware: {
+    //         writeToDisk: true,
+    //     },
+    // },
     plugins,
-    devtool: isProduction ? false : 'cheap-source-map',
+    devtool: isProduction ? false : 'source-map',
 }
 
 export default config

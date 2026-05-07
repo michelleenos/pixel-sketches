@@ -91,32 +91,11 @@ export class Drawing {
 
     buildGui() {
         this.gui = flowFieldDrawingGui(this)
-        // this.gui.add(this.field, 'noiseScale', 0.0001, 0.01, 0.0001)
-        // this.gui.add(this.field, 'speed', 0.1, 20, 0.1)
-        // this.gui.add(this.field, 'lerpVal', 0.01, 1, 0.01)
-        // this.gui.add(this.field, 'turns', 1, 10, 1)
-        // this.gui.add(this.field, 'bgAlpha', 0, 255, 1)
-        // this.gui.add(this.field, 'lineAlpha', 0, 255, 1)
-        // this.gui.add(this.field, 'count', 0, 5000, 1)
-
-        // const tf = this.gui.addFolder('Timer')
-        // tf.add(this.timer, 'timeJump', 0, 5000, 10)
-        // tf.add(this.timer, 'timeJumpInterval', 0, 10000, 10)
-
-        // let options = this._palettes
-        //     .map((pal) => ({ [pal.name]: pal }))
-        //     .reduce((acc, pal) => {
-        //         return { ...acc, ...pal }
-        //     }, {})
-        // this.gui.add(this, 'palette', options).onChange(() => this.restart())
-        // this.gui.add(this, 'save')
-        // this.gui.add(this, 'restart')
-        // this.gui.add(this, 'restartWithNewColors')
     }
 
     save() {
         const { field, timer } = this
-        let name = `flowfield-${this._palette.name}-scale${field.noiseScale}-speed${field.speed}-timeScale${timer.timeScale}-lerp${field.lerpVal}-turns${field.turns}-bgAlpha${field.bgAlpha}-lineAlpha${field.lineAlpha}-count${field.count}-timeJump${timer.timeJump}-timeJumpInterval${timer.timeJumpInterval}`
+        let name = `flowfield-${this._palette.name}-scale${field.noiseScale}-speed${field.speed}-lerp${field.lerpVal}-turns${field.turns}-bgAlpha${field.bgAlpha}-lineAlpha${field.lineAlpha}-count${field.count}-timeJump${timer.timeJump}-timeJumpInterval${timer.timeJumpInterval}`
         this.p.saveCanvas(name, 'png')
     }
 }
