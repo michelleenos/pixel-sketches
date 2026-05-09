@@ -81,4 +81,16 @@ export default class Vec2 {
     distance(other: Vec2) {
         return this.copy().sub(other).mag()
     }
+
+    setHeading(angle: number) {
+        const mag = this.mag()
+        this.x = Math.cos(angle)
+        this.y = Math.sin(angle)
+        this.setMag(mag)
+        return this
+    }
+
+    heading() {
+        return Math.atan2(this.y, this.x)
+    }
 }

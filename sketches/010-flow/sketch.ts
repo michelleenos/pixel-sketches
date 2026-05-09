@@ -1,136 +1,168 @@
-import p5 from 'p5'
-import { lerp } from 'utils'
-import { FlowField } from './flow-field'
+import GUI from 'lil-gui'
+import { getPaletteVariants, palettesList } from 'mish-bainrow'
+import type { FlowParams, FlowWorker } from './flow.types'
+import { createElement, easing, random } from 'utils'
 
-const PARAMS = {
-    res: 30,
-    noiseScale: 3,
-    noiseFreq: 0.05,
+const palettes = getPaletteVariants({
+    isolateColors: true,
+})
+const palette = random(palettes)
+
+const params: FlowParams = {
+    width: 800,
+    height: 800,
+    colorCycles: 6,
+    maxSteps: 500,
+    minSteps: 10,
+    stepLength: 4,
+    lineWidth: 7,
+    gridSize: 60,
+    noiseMult: 0.1,
+    minSpace: 4,
+    taperEase: 'outCirc',
+    palette: palette,
+    shouldDrawField: false,
+    drawStrategy: {
+        type: 'circlePack',
+        radius: 8,
+        maxAttempts: 100,
+    },
 }
 
-new p5((p: p5) => {
-    let field: p5.Vector[][] = []
-    let particles: p5.Vector[] = []
-    let m: number
-    let cellSize: number
+const sizes = { width: 800, height: 800, pixelRatio: Math.min(window.devicePixelRatio, 2) }
 
-    function generateField() {
-        cellSize = m / PARAMS.res
+const canvas = createElement('canvas', { style: 'display:block' })
+const loading = createElement(
+    'div',
+    {
+        style: 'background:#fff;text-align:center;display:flex;align-items:center;justify-content:center;font-size:18px;position:absolute;width:100%;height:100%;top:0;left:0;color:#000;font-weight:600;opacity:0.8',
+    },
+    ['drawing...'],
+)
+const container = createElement('div', { style: 'position:relative;display:inline-block;' }, [
+    canvas,
+    loading,
+])
+document.body.appendChild(container)
 
-        let ms = p.millis()
-        field = []
-        for (let xi = 0; xi < PARAMS.res; xi++) {
-            let row: p5.Vector[] = []
-            for (let yi = 0; yi < PARAMS.res; yi++) {
-                let n = p.noise(xi * PARAMS.noiseFreq, yi * PARAMS.noiseFreq, ms / 1000)
-                n *= PARAMS.noiseScale * Math.PI * 2
-                let v = p.createVector(Math.cos(n), Math.sin(n))
+const offscreenCanvas = canvas.transferControlToOffscreen()
 
-                // let n2 = p.noise(v.x * 0.25, v.y * 0.25)
-                // n2 *= PARAMS.noiseScale * Math.PI * 2
-                // let v2 = p.createVector(Math.cos(n2), Math.sin(n2))
+let workerBusy = false
+let pendingUpdate = false
 
-                row.push(v)
-            }
-            field.push(row)
+const worker = new Worker(new URL('./sketch.worker.ts', import.meta.url)) as FlowWorker
+worker.postMessage({ type: 'init', canvas: offscreenCanvas, params }, [offscreenCanvas])
+
+worker.onmessage = (e) => {
+    const type = e.data.type
+    if (type === 'start') {
+        workerBusy = true
+        loading.style.display = 'flex'
+    } else if (type === 'done') {
+        workerBusy = false
+        loading.style.display = 'none'
+        if (pendingUpdate) sendUpdate()
+    }
+}
+
+function sendUpdate() {
+    if (workerBusy) {
+        pendingUpdate = true
+    } else {
+        worker.postMessage({ type: 'update', params })
+        pendingUpdate = false
+    }
+}
+
+function setSize() {
+    worker.postMessage({ type: 'setSize', sizes })
+    canvas.style.width = `${sizes.width}px`
+    canvas.style.height = `${sizes.height}px`
+}
+
+setSize()
+
+const debg = {
+    reseed: () => worker.postMessage({ type: 'reseed' }),
+    palette: palette.name,
+    drawGridParams: {
+        spacing: 20,
+    },
+    drawRandomParams: {
+        count: 800,
+    },
+    drawCircleParams: {
+        radius: 8,
+        maxAttempts: 100,
+    },
+    drawStrategyType: 'circlePack' as 'grid' | 'circlePack' | 'random',
+}
+
+const gui = new GUI()
+const f = gui.addFolder('flow')
+f.add(params, 'stepLength', 0.1, 30, 0.1)
+f.add(params, 'maxSteps', 1, 2000, 1)
+f.add(params, 'minSteps', 1, 1000, 1)
+f.add(params, 'gridSize', 1, 250, 1)
+f.add(params, 'colorCycles', 1, 30, 1)
+f.add(params, 'lineWidth', 0.5, 20, 0.5)
+f.add(params, 'noiseMult', 0, 2, 0.01)
+f.add(params, 'taperEase', Object.keys(easing))
+f.add(params, 'minSpace', 0.1, 20, 0.1)
+f.add(params, 'shouldDrawField')
+f.add(
+    params,
+    'palette',
+    palettes.reduce((list, palette) => {
+        return {
+            ...list,
+            [palette.name]: palette,
+        }
+    }, {}),
+)
+f.onChange(sendUpdate)
+
+const sf = gui.addFolder('drawStrategy').onChange(() => {
+    let type = debg.drawStrategyType
+    if (type === 'grid') {
+        params.drawStrategy = {
+            type: 'grid',
+            ...debg.drawGridParams,
+        }
+    } else if (type === 'circlePack') {
+        params.drawStrategy = {
+            type: 'circlePack',
+            ...debg.drawCircleParams,
+        }
+    } else {
+        params.drawStrategy = {
+            type: 'random',
+            ...debg.drawRandomParams,
         }
     }
-
-    function smoothstep(t: number) {
-        return t * t * (3 - 2 * t)
-    }
-    function interpolateGridValue(x: number, y: number) {
-        let gridX = x / cellSize
-        let gridY = y / cellSize
-
-        let x0 = Math.floor(gridX)
-        let x1 = Math.min(x0 + 1, PARAMS.res - 1)
-        let y0 = Math.floor(gridY)
-        let y1 = Math.min(y0 + 1, PARAMS.res - 1)
-
-        let dx = gridX - x0
-        let dy = gridY - y0
-
-        let tl = field[x0][y0]
-        let tr = field[x1][y0]
-        let bl = field[x0][y1]
-        let br = field[x1][y1]
-
-        let topX = lerp(tl.x, tr.x, dx)
-        let topY = lerp(tl.y, tr.y, dx)
-        let botX = lerp(bl.x, br.x, dx)
-        let botY = lerp(bl.y, br.y, dx)
-        let midX = lerp(topX, botX, dy)
-        let midY = lerp(topY, botY, dy)
-        return Math.atan2(midY, midX)
-        // let top = lerp(tl, tr, dx)
-        // let bottom = lerp(bl, br, dx)
-        // let mid = lerp(top, bottom, dy)
-
-        // return mid
-    }
-
-    // function drawField() {
-    //     for (let xi = 0; xi < PARAMS.res; xi++) {
-    //         for (let yi = 0; yi < PARAMS.res; yi++) {
-    //             // let index = (xi % PARAMS.res) + yi * PARAMS.res
-    //             let angle = field[xi][yi]
-    //             let x = cellSize * xi
-    //             let y = cellSize * yi
-
-    //             p.stroke(200)
-    //             p.strokeWeight(1)
-    //             p.line(x, y, x + Math.cos(angle) * 15, y + Math.sin(angle) * 15)
-
-    //             p.stroke(200, 100, 0)
-    //             p.strokeWeight(5)
-    //             p.point(x, y)
-    //         }
-    //     }
-    // }
-
-    p.setup = function () {
-        m = Math.min(window.innerWidth, window.innerHeight) * 0.9
-        let renderer = p.createCanvas(window.innerWidth, window.innerHeight)
-        renderer.addClass('sketch sketch--centered')
-        p.frameRate(60)
-        p.strokeCap(p.SQUARE)
-
-        for (let i = 0; i < 1000; i++) {
-            particles.push(p.createVector(p.random(m), p.random(m)))
-        }
-
-        generateField()
-    }
-
-    p.draw = function () {
-        generateField()
-        // p.background(0)
-        p.push()
-        p.translate((p.width - m) / 2, (p.height - m) / 2)
-
-        // p.fill(255, 10)
-        // p.rect(0, 0, m, m)
-
-        // drawField()
-        particles.forEach((particle) => {
-            if (particle.x >= m || particle.x < 0 || particle.y >= m || particle.y < 0) {
-                particle.set(p.random(m), p.random(m))
-            }
-            let angle = interpolateGridValue(particle.x, particle.y)
-            let va = p.createVector(-1, 1).setMag(5).setHeading(angle)
-            let prevPos = particle.copy()
-            particle.add(va)
-            p.stroke(255, 10)
-            // p.fill(255)
-            p.line(prevPos.x, prevPos.y, particle.x, particle.y)
-            // p.circle(particle.x, particle.y, 5)
-        })
-
-        p.pop()
-    }
-
-    p.mouseClicked = function (e) {
-        if (!e || !(e.target instanceof HTMLCanvasElement)) return
-    }
+    sendUpdate()
 })
+sf.add(debg, 'drawStrategyType', ['grid', 'circlePack', 'random']).onChange(
+    (val: 'grid' | 'circlePack' | 'random') => dfShow(val),
+)
+
+const df = {
+    grid: sf.addFolder('grid'),
+    circlePack: sf.addFolder('circlePack'),
+    random: sf.addFolder('random'),
+}
+
+const dfShow = (type: keyof typeof df) => {
+    ;(Object.keys(df) as (keyof typeof df)[]).forEach((val) => {
+        type === val ? df[val].show() : df[val].hide()
+    })
+}
+
+dfShow(params.drawStrategy!.type)
+
+df.grid.add(debg.drawGridParams, 'spacing', 1, 50, 0.5)
+df.circlePack.add(debg.drawCircleParams, 'radius', 1, 100, 1)
+df.circlePack.add(debg.drawCircleParams, 'maxAttempts', 2, 3000, 1)
+df.random.add(debg.drawRandomParams, 'count', 1, 5000, 1)
+
+gui.add(debg, 'reseed')

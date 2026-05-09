@@ -11,6 +11,8 @@
     "license": "ISC",
     "packageManager": "pnpm@10.13.1",
     "dependencies": {
+        "alea": "^1.0.1",
+        "simplex-noise": "^4.0.3",
         "utils": "workspace:*"
     }
 }

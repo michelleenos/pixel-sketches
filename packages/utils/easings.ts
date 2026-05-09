@@ -2,6 +2,8 @@
 // https://github.com/Michaelangel007/easing#tldr-shut-up-and-show-me-the-code
 // easings.net
 
+export type EaseFn = (n: number) => number
+
 export const easing = {
     inSine: (x: number) => 1 - Math.cos((x * Math.PI) / 2),
     outSine: (x: number) => Math.sin((x * Math.PI) / 2),
@@ -97,7 +99,7 @@ export const easing = {
             1
         )
     },
-}
+} satisfies { [key: string]: EaseFn }
 
 export type Easing = keyof typeof easing
 

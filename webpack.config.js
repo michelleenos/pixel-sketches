@@ -25,8 +25,6 @@ const sortedSketches = sketchConfigs.sketchJsons.sort((a, b) => {
     return 1
 })
 
-console.log(sortedSketches)
-
 const plugins = [
     ...sketchConfigs.htmlConfigs.map((c) => new HtmlWebpackPlugin(c)),
     new HtmlWebpackPlugin({
@@ -73,7 +71,11 @@ const config = {
             {
                 test: /\.[jt]sx?$/,
                 loader: 'esbuild-loader',
-                // options: {},
+                options: {
+                    supported: {
+                        'import-meta': true,
+                    },
+                },
             },
             {
                 test: /\.s[ac]ss$/i,
