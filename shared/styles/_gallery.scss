@@ -113,10 +113,10 @@
 .about-cols {
     display: flex;
     column-gap: 80px;
-    margin-bottom: 60px;
     justify-content: space-between;
     border-top: 1px solid #333;
     padding-top: 120px;
+    padding-bottom: 120px;
 
     h2,
     p {
