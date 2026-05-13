@@ -34,6 +34,7 @@ self.onmessage = (e: MessageEvent<ToFlowWorker>) => {
         canvas.width = sizes.width * sizes.pixelRatio
         canvas.height = sizes.height * sizes.pixelRatio
         ctx.scale(sizes.pixelRatio, sizes.pixelRatio)
+        flow.setSize(msg.sizes)
         drawFlow()
     }
 }

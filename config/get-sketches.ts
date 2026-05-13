@@ -22,6 +22,7 @@ interface SketchConfigJson {
     lastUpdated?: string
     description?: string
     skip?: boolean
+    id?: string
 }
 
 interface SketchConfigOpts {
@@ -89,6 +90,7 @@ async function getSketchConfig(file: string, sketchesDir: string): Promise<Sketc
         },
         sketchJson: {
             ...sketchConfig,
+            id: slug.split('-')[0],
             slug,
         },
     }

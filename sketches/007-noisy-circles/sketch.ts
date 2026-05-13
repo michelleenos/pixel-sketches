@@ -99,7 +99,8 @@ new p5((p: p5) => {
     }
 
     p.setup = function () {
-        p.createCanvas(window.innerWidth, window.innerHeight)
+        const canvas = p.createCanvas(window.innerWidth, window.innerHeight)
+        canvas.elt.classList.add('sketch')
         setVars()
         p.noLoop()
 

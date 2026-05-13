@@ -124,6 +124,21 @@ export class Flow {
         return this._palette
     }
 
+    setSize = (size: { width: number; height: number }) => {
+        this.drawSize = { ...size }
+        this.fieldSize = { width: this.drawSize.width * 2, height: this.drawSize.height * 2 }
+        let diffX = this.fieldSize.width - this.drawSize.width
+        let diffY = this.fieldSize.height - this.drawSize.height
+        this._drawBounds = new Bounds(0, 0, this.drawSize.width, this.drawSize.height)
+        this._fieldBounds = new Bounds(
+            -diffX / 2,
+            this.drawSize.width + diffX / 2,
+            -diffY / 2,
+            this.drawSize.height + diffY / 2,
+        )
+        this.field.bounds = this._fieldBounds
+    }
+
     getTaper = (i: number, curveLen: number) => {
         let distFromEnd = i < curveLen / 2 ? i * this.stepLength : (curveLen - i) * this.stepLength
         if (distFromEnd > this.taperLength) return this.lineWidthMax

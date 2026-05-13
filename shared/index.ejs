@@ -7,19 +7,113 @@
 
 	<link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap" rel="stylesheet">
 </head>
-<body class="gallery-index">
+<body class="sketchindex">
+	<div class="sketchindex__wrap">
+		<div class="sketchindex__topbar topbar">
+			<p class="topbar__left">A collection of algorithmic art experiments.</p>
+			<div class="topbar__links">
+				<a href="https://michelleenos.com" target="_blank" class="topbar__link">michelleenos.com</a>
+				<span class="topbar__sep">·</span>
+				<a href="#" class="topbar__link">view on github</a>
+			</div>
+		</div>
 
-	<h1>code art gallery</h1>
+		<h1 class="sketchindex__title">pixel sketches</h1>
 
-	<ul>
-		<% sketches.forEach(function (sketch) { %>
-			<li>
-				<a href="<%= sketch.slug %>">
-					<%= sketch.slug %>
-				</a>
-			</li>
-		<% }) %>
 
-	</ul>
+
+		<div class="projects">
+			<div class="projects__col-list">
+				<ul class="links-list links-list--big">
+					<% sketches.forEach(function (sketch) { %>
+						<li class="links-list__item">
+							<a href="<%= sketch.slug %>" class="links-list__link">
+								<span class="links-list__accent"><%= sketch.id %></span>
+								<span class="links-list__text"> <%= sketch.title %></span>
+							</a>
+						</li>
+					<% }) %>
+				</ul>
+			</div>
+
+			<div class="projects__col-preview">
+				<div class="projects__preview-image">
+					<img src="./images/flow-steps.webp" alt="flow field preview" />
+				</div>
+			</div>
+		</div>
+
+		<div class="sketchindex__about about-cols">
+			<div class="about-cols__desc">
+				<h2>About</h2>
+				<p>
+					This is a gallery of experiments and explorations with code, math, and motion. 
+				</p>
+				<p>Check the links on the right for more or to find me elsewhere on the interwebs :)</p>
+			</div>
+
+			<div class="about-cols__links">
+				<div class="about-cols__list">
+					<h2>More code artwork</h2>
+					<ul class="links-list links-list--small">
+						<li class="links-list__item">
+							<a href="https://michelleenos.github.io/shaders/" target="_blank" class="links-list__link">
+								<span class="links-list__accent">→</span>
+								<span class="links-list__text">glsl shader collection</span>
+							</a>
+						</li>
+						<li class="links-list__item">
+							<a href="https://michelleenos.github.io/threejs-experiments/" target="_blank" class="links-list__link">
+								<span class="links-list__accent">→</span>
+								<span class="links-list__text">three.js experiments</span>
+							</a>
+						</li>					
+						<li class="links-list__item">
+							<a href="https://michelleenos.github.io/generative-art-2022/" target="_blank" class="links-list__link">
+								<span class="links-list__accent">→</span>
+								<span class="links-list__text">generative art gallery (2022)</span>
+							</a>
+						</li>
+						<li class="links-list__item">
+							<a href="https://michelleenos.github.io/generative-art/" target="_blank" class="links-list__link">
+								<span class="links-list__accent">→</span>
+								<span class="links-list__text">generative art gallery (2021)</span>
+							</a>												
+						</li>
+					</ul>
+				</div>
+
+				<div class="about-cols__list">
+					<h2>Where to find me</h2>
+					<ul class="links-list links-list--small">
+						<li class="links-list__item">
+							<a href="https://github.com/michelleenos/" target="_blank" class="links-list__link">
+								<span class="links-list__accent">→</span>
+								<span class="links-list__text">github</span>
+							</a>
+						</li>
+						<li class="links-list__item">
+							<a href="https://www.linkedin.com/in/michelle-enos/" target="_blank" class="links-list__link">
+								<span class="links-list__accent">→</span>
+								<span class="links-list__text">linkedin</span>
+							</a>
+						</li>
+						<li class="links-list__item">
+							<a href="https://openprocessing.org/@u261110/#sketches" target="_blank" class="links-list__link">
+								<span class="links-list__accent">→</span>
+								<span class="links-list__text">openprocessing</span>
+							</a>
+						</li>					
+					</ul>
+				</div>
+			</div>
+		</div>		
+
+		<div class="footer">
+			<p class="footer__me">made by michelle</p>
+		</div>
+
+
+	</div>
 </body>
 </html>

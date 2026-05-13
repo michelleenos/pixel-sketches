@@ -4,8 +4,13 @@
 @use './styles/gallery';
 
 :root {
-    --bg: #131616;
-    --bg-rgb: 19, 22, 22;
+    --bg: #0d0d0d;
+    --bg-hsl: hsl(0, 0%, 5%);
+    --text: #f5f2eb;
+    --text-mid: #c8c4bb;
+    --text-faded: #757575;
+    --text-faded-less: #9d9c9c;
+    --text-hsl: rgb(245, 242, 235);
     --primary: #34c2ff;
     --secondary: #ff934f;
     --primary-rgb: 52, 194, 255;
@@ -14,29 +19,32 @@
 body {
     @include inconsolata();
     line-height: 1.4;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     background-color: var(--bg);
     color: #fff;
 }
 
 a {
-    color: var(--primary);
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 2px;
-    text-decoration-color: rgba(var(--primary-rgb), 0.3);
-    transition-property: text-decoration-color;
-    transition-timing-function: ease;
-    transition-duration: 300ms;
+    // color: var(--primary);
+    color: var(--text);
+    // text-decoration: underline;
+    text-decoration: none;
+    // text-decoration-thickness: 2px;
+    // text-underline-offset: 2px;
+    // text-decoration-color: rgba(var(--primary-rgb), 0.3);
+    // transition-property: text-decoration-color;
+    // transition-timing-function: ease;
+    // transition-duration: 300ms;
 
     &:hover,
     &:focus {
-        text-decoration-color: rgba(var(--primary-rgb), 1);
+        // text-decoration-color: rgba(var(--primary-rgb), 1);
     }
 }
 
 h1,
+h2,
 .title-1 {
     font-weight: 600;
     font-size: 26px;

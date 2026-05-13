@@ -28,7 +28,7 @@ const sortedSketches = sketchConfigs.sketchJsons.sort((a, b) => {
 const plugins = [
     ...sketchConfigs.htmlConfigs.map((c) => new HtmlWebpackPlugin(c)),
     new HtmlWebpackPlugin({
-        title: 'Code Art Gallery',
+        title: 'Pixel Sketches',
         filename: 'index.html',
         template: path.resolve(__dirname, 'shared/index.ejs'),
         chunks: ['galleryIndex', 'style'],
@@ -48,6 +48,10 @@ const plugins = [
                 transform() {
                     return JSON.stringify(sketchConfigs.sketchJsons)
                 },
+            },
+            {
+                from: path.resolve(__dirname, 'shared/images'),
+                to: path.resolve(__dirname, 'dist/images'),
             },
         ],
     }),
@@ -99,11 +103,12 @@ const config = {
         },
         runtimeChunk: 'single',
     },
-    // devServer: {
-    //     devMiddleware: {
-    //         writeToDisk: true,
-    //     },
-    // },
+    devServer: {
+        watchFiles: ['shared/**/*.ejs', 'shared/**/*.scss'],
+        //     devMiddleware: {
+        //         writeToDisk: true,
+        //     },
+    },
     plugins,
     devtool: isProduction ? false : 'source-map',
 }
