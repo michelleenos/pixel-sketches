@@ -1,0 +1,7 @@
+{
+    "$schema": "../../sketch-schema.json",
+    "title": "flow curves",
+    "useP5": false,
+    "created": "2026",
+    "description": "<p>Another flow field implementation, this one including checks to avoid collisions between lines. Points of each curve are collected in a <a href='https://available-anaconda-10d.notion.site/That-Creative-Code-Page-c5550ef2f7574126bdc77b09ed76651b?p=eb9ede010dd4422ba78221aacdafe54a&pm=c' target='_blank'>quad tree</a> for optimization purposes; still, depending on the parameters, the process can take awhile, so the algorithm runs offscreen in a web worker.</p>"
+}

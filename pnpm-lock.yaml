@@ -173,12 +173,19 @@ importers:
       alea:
         specifier: ^1.0.1
         version: 1.0.1
+      chroma-js:
+        specifier: ^3.2.0
+        version: 3.2.0
       simplex-noise:
         specifier: ^4.0.3
         version: 4.0.3
       utils:
         specifier: workspace:*
         version: link:../../packages/utils
+    devDependencies:
+      '@types/chroma-js':
+        specifier: ^3.1.2
+        version: 3.1.2
 
   sketches/011-edges:
     dependencies:

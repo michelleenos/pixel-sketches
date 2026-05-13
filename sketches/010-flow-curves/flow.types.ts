@@ -25,9 +25,11 @@ export interface FlowParams {
     maxSteps?: number
     minSteps?: number
     colorCycles?: number
-    lineWidth?: number
+    lineWidthMax?: number
+    lineWidthMin?: number
     noiseMult?: number
     taperEase?: Easing
+    taperLength?: number
     minSpace?: number
     palette?: { bg: string; colors: string[] }
     drawStrategy?: FlowDrawStrategy

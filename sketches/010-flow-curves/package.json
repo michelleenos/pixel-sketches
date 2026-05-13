@@ -12,7 +12,11 @@
     "packageManager": "pnpm@10.13.1",
     "dependencies": {
         "alea": "^1.0.1",
+        "chroma-js": "^3.2.0",
         "simplex-noise": "^4.0.3",
         "utils": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/chroma-js": "^3.1.2"
     }
 }

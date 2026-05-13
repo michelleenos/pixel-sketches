@@ -25,6 +25,20 @@ export function random<T>(numOrArray?: number | readonly T[], max?: number) {
     return numOrArray[Math.floor(Math.random() * numOrArray.length)]
 }
 
+/**
+ *
+ * @param min
+ * @param max
+ * @param bias numbers will be more likely to land here
+ * @param influence [0-1]
+ * @returns
+ */
+export function randomBiased(min: number, max: number, bias: number, influence = 1) {
+    const base = random(min, max)
+    const mix = random(0, 1) * influence
+    return base * (1 - mix) + bias * mix
+}
+
 export function step(edge: number, value: number) {
     return value < edge ? 0 : 1
 }

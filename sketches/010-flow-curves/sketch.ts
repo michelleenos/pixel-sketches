@@ -1,5 +1,5 @@
 import GUI from 'lil-gui'
-import { getPaletteVariants, palettesList } from 'mish-bainrow'
+import { getPaletteVariants } from 'mish-bainrow'
 import type { FlowParams, FlowWorker } from './flow.types'
 import { createElement, easing, random } from 'utils'
 
@@ -9,17 +9,19 @@ const palettes = getPaletteVariants({
 const palette = random(palettes)
 
 const params: FlowParams = {
-    width: 800,
-    height: 800,
+    width: window.innerWidth,
+    height: window.innerHeight,
     colorCycles: 6,
     maxSteps: 500,
     minSteps: 10,
     stepLength: 4,
-    lineWidth: 7,
+    lineWidthMax: 7,
+    lineWidthMin: 0.5,
     gridSize: 60,
     noiseMult: 0.1,
     minSpace: 4,
     taperEase: 'outCirc',
+    taperLength: 200,
     palette: palette,
     shouldDrawField: false,
     drawStrategy: {
@@ -29,7 +31,11 @@ const params: FlowParams = {
     },
 }
 
-const sizes = { width: 800, height: 800, pixelRatio: Math.min(window.devicePixelRatio, 2) }
+const sizes = {
+    width: params.width,
+    height: params.height,
+    pixelRatio: Math.min(window.devicePixelRatio, 2),
+}
 
 const canvas = createElement('canvas', { style: 'display:block' })
 const loading = createElement(
@@ -105,9 +111,11 @@ f.add(params, 'maxSteps', 1, 2000, 1)
 f.add(params, 'minSteps', 1, 1000, 1)
 f.add(params, 'gridSize', 1, 250, 1)
 f.add(params, 'colorCycles', 1, 30, 1)
-f.add(params, 'lineWidth', 0.5, 20, 0.5)
+f.add(params, 'lineWidthMax', 0.5, 20, 0.5)
+f.add(params, 'lineWidthMin', 0.1, 20, 0.1)
 f.add(params, 'noiseMult', 0, 2, 0.01)
 f.add(params, 'taperEase', Object.keys(easing))
+f.add(params, 'taperLength', 1, 800, 1)
 f.add(params, 'minSpace', 0.1, 20, 0.1)
 f.add(params, 'shouldDrawField')
 f.add(
