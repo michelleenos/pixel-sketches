@@ -4,23 +4,16 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  mish-bainrow: link:../bainrow
-  canvas-frames: link:../canvas-frames
-
 importers:
 
   .:
     dependencies:
-      canvas-frames:
-        specifier: link:../canvas-frames
-        version: link:../canvas-frames
       lil-gui:
         specifier: ^0.21.0
         version: 0.21.0
       mish-bainrow:
-        specifier: link:../bainrow
-        version: link:../bainrow
+        specifier: ^1.0.24
+        version: 1.0.24
       p5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1903,6 +1896,9 @@ packages:
 
   minimalistic-assert@1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
+
+  mish-bainrow@1.0.24:
+    resolution: {integrity: sha512-jdtqLZOpP0fE76uo8S0URJE2HjeRXLhu2OtFf90kZN16UXvHpParlUE8YwqD8cTFO+JA6kAF3PCcenaghUXNbQ==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -4535,6 +4531,8 @@ snapshots:
       webpack: 5.106.2(postcss@8.5.14)(webpack-cli@6.0.1)
 
   minimalistic-assert@1.0.1: {}
+
+  mish-bainrow@1.0.24: {}
 
   mrmime@2.0.1: {}
 
