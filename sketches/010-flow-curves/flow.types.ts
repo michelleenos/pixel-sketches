@@ -24,7 +24,6 @@ export interface FlowParams {
     stepLength?: number
     maxSteps?: number
     minSteps?: number
-    colorCycles?: number
     lineWidthMax?: number
     lineWidthMin?: number
     noiseMult?: number
@@ -33,14 +32,13 @@ export interface FlowParams {
     minSpace?: number
     palette?: { bg: string; colors: string[] }
     drawStrategy?: FlowDrawStrategy
-    shouldDrawField?: boolean
 }
 
 export type ToFlowWorker =
     | { type: 'init'; canvas: OffscreenCanvas; params: FlowParams }
-    | { type: 'draw' }
+    | { type: 'draw'; regenerate: boolean }
     | { type: 'setSize'; sizes: { width: number; height: number; pixelRatio: number } }
-    | { type: 'update'; params: Partial<FlowParams> }
+    | { type: 'update'; params: Partial<FlowParams>; regenerate: boolean }
     | { type: 'reseed' }
 
 export type FromFlowWorker = { type: 'done' } | { type: 'start' }

@@ -14,27 +14,37 @@ type CurvePointFn = ([x, y]: Point2d) => Point2d
 export class Curves {
     curves: Curve[] = []
     qt: QuadTree
-    bounds: Bounds
+    _bounds: Bounds
     fn: CurvePointFn
     minSpace = 10
 
-    constructor(bounds: Bounds, fn: CurvePointFn) {
-        this.bounds = bounds
+    constructor({ bounds, fn, minSpace }: { bounds: Bounds; fn: CurvePointFn; minSpace?: number }) {
+        this._bounds = bounds
         this.fn = fn
-        this.qt = new QuadTree(this.bounds, 4)
+        if (minSpace !== undefined) this.minSpace = minSpace
+        this.qt = new QuadTree(this._bounds, 100)
     }
 
-    pointIntersects = (x: number, y: number, tempQt?: QuadTree) => {
+    set bounds(newBounds: Bounds) {
+        this._bounds = newBounds
+        this.qt = new QuadTree(this._bounds, 100)
+    }
+
+    clear = () => {
+        this.qt.clear()
+        this.curves = []
+    }
+
+    pointIsValid = (x: number, y: number) => {
+        if (!this._bounds.contains(x, y)) return false
         let paddedBounds = new Bounds(
             x - this.minSpace,
             x + this.minSpace,
             y - this.minSpace,
             y + this.minSpace,
         )
-        if (!this.bounds.contains(x, y)) return true
-        if (this.qt.query(paddedBounds).length > 0) return true
-        if (tempQt && tempQt.query(paddedBounds).length > 0) return true
-        return false
+        if (this.qt.query(paddedBounds).length > 0) return false
+        return true
     }
 
     attemptGenerate = (start: [number, number], minLength = 3, maxLength = Infinity) => {
@@ -42,16 +52,14 @@ export class Curves {
 
         let points: [number, number][] = []
         let done = false
-        let tempQt = new QuadTree(this.bounds, 4)
 
         while (points.length < maxLength && !done) {
-            if (this.pointIntersects(x, y)) {
+            if (!this.pointIsValid(x, y)) {
                 done = true
                 break
             }
 
             points.push([x, y])
-            tempQt.insert([x, y])
 
             if (points.length >= maxLength) {
                 done = true
@@ -60,6 +68,8 @@ export class Curves {
 
             ;[x, y] = this.fn([x, y])
         }
+
+        // console.log(`cur curves len: ${this.curves.length}; maxdepth: ${this.qt.maxDepth}`)
 
         if (points.length >= minLength) {
             const c = new Curve(points)

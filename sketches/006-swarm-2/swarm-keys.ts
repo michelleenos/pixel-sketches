@@ -17,6 +17,25 @@ interface SwarmParams {
     newColors: () => void
 }
 
+type SwarmParamWithKey = Exclude<keyof SwarmParams, 'clear' | 'newColors'>
+
+const keys = ['as', 'df', 'zx', 'cv', 'qw', 'er', 'ty', 'gh', 'bn', 'ui', 'jk', 'op']
+
+const paramKeys: Record<SwarmParamWithKey, string[]> = {
+    damping: keys[0].split(''),
+    maxVel: keys[1].split(''),
+    bubbleSize: keys[2].split(''),
+    mouseMass: keys[3].split(''),
+    mouseSize: keys[4].split(''),
+    mouseDistMin: keys[5].split(''),
+    mouseDistMax: keys[6].split(''),
+    massMax: keys[7].split(''),
+    massMin: keys[8].split(''),
+    mouseDistPow: keys[9].split(''),
+    bubbleDistMin: keys[10].split(''),
+    bubbleDistPow: keys[11].split(''),
+}
+
 export function swarmKeys(P: SwarmParams) {
     const defaultParams = { ...P }
     let paramsShown = false
@@ -43,23 +62,27 @@ export function swarmKeys(P: SwarmParams) {
             curY += 20
         }
 
+        const writeVal = (key: SwarmParamWithKey) => {
+            writeText(`${key.padEnd(15, ' ')} (${paramKeys[key].join(', ')}): ${P[key]}`)
+        }
+
         ctx.save()
 
         if (paramsShown) {
             ctx.translate(10, height - 360)
 
-            writeText(`damping          (z, x): ${P.damping}`)
-            writeText(`maxVel           (v, b): ${P.maxVel}`)
-            writeText(`bubbleSize       (a, s): ${P.bubbleSize}`)
-            writeText(`mouseMass        (c, v): ${P.mouseMass}`)
-            writeText(`mouseSize        (d, f): ${P.mouseSize}`)
-            writeText(`mouseDistMin     (e, r): ${P.mouseDistMin}`)
-            writeText(`mouseDistMax     (t, y): ${P.mouseDistMax}`)
-            writeText(`massMin          (n, m): ${P.massMin}`)
-            writeText(`massMax          (g, h): ${P.massMax}`)
-            writeText(`mouseDistPow     (j, k): ${P.mouseDistPow}`)
-            writeText(`bubbleDistMin    (u, i): ${P.bubbleDistMin}`)
-            writeText(`bubbleDistPow    (o, p): ${P.bubbleDistPow}`)
+            writeVal('damping')
+            writeVal('maxVel')
+            writeVal('bubbleSize')
+            writeVal('mouseMass')
+            writeVal('mouseSize')
+            writeVal('mouseDistMin')
+            writeVal('mouseDistMax')
+            writeVal('massMin')
+            writeVal('massMax')
+            writeVal('mouseDistPow')
+            writeVal('bubbleDistMin')
+            writeVal('bubbleDistPow')
             writeText(' ')
             writeText('shift + key = bigger change')
             writeText('spacebar    = clear particles')
@@ -88,76 +111,76 @@ export function swarmKeys(P: SwarmParams) {
             case ' ':
                 P.clear()
                 break
-            case 'x':
+            case paramKeys.damping[0]:
                 adjust('damping', 0.001 * shift, 3, 0, 1)
                 break
-            case 'z':
+            case paramKeys.damping[1]:
                 adjust('damping', -0.001 * shift, 3, 0, 1)
                 break
-            case 'b':
+            case paramKeys.maxVel[0]:
                 adjust('maxVel', 0.1 * shift, 1, 0)
                 break
-            case 'v':
+            case paramKeys.maxVel[1]:
                 adjust('maxVel', -0.1 * shift, 1, 0)
                 break
-            case 'a':
+            case paramKeys.bubbleSize[0]:
                 adjust('bubbleSize', -1 * shift, 0)
                 break
-            case 's':
+            case paramKeys.bubbleSize[1]:
                 adjust('bubbleSize', 1 * shift, 0)
                 break
-            case 'c':
+            case paramKeys.mouseMass[0]:
                 adjust('mouseMass', -1 * shift, 1, 1)
                 break
-            case 'v':
+            case paramKeys.mouseMass[1]:
                 adjust('mouseMass', 1 * shift, 1)
                 break
-            case 'd':
+            case paramKeys.mouseSize[0]:
                 adjust('mouseSize', -1 * shift, 0, 1)
                 break
-            case 'f':
+            case paramKeys.mouseSize[1]:
                 adjust('mouseSize', 1 * shift, 0)
                 break
-            case 'e':
+            case paramKeys.mouseDistMin[0]:
                 adjust('mouseDistMin', -1 * shift, 1, 5)
                 break
-            case 'r':
+            case paramKeys.mouseDistMin[1]:
                 adjust('mouseDistMin', 1 * shift, 1, 5)
                 break
-            case 't':
+            case paramKeys.mouseDistMax[0]:
                 adjust('mouseDistMax', -1 * shift, 1, 5)
                 break
-            case 'y':
+            case paramKeys.mouseDistMax[1]:
                 adjust('mouseDistMax', 1 * shift, 1, 5)
                 break
-            case 'g':
+            case paramKeys.massMax[0]:
                 adjust('massMax', -0.1 * shift, 1, 0.1)
                 break
-            case 'h':
+            case paramKeys.massMax[1]:
                 adjust('massMax', 0.1 * shift, 1, 0.1)
                 break
-            case 'n':
+            case paramKeys.massMin[0]:
                 adjust('massMin', -0.1 * shift, 0, 0.1)
                 break
-            case 'm':
+            case paramKeys.massMin[1]:
                 adjust('massMin', 0.1 * shift, 0, 0.1)
                 break
-            case 'j':
+            case paramKeys.mouseDistPow[0]:
                 adjust('mouseDistPow', -0.1 * shift, 1, 0.1)
                 break
-            case 'k':
+            case paramKeys.mouseDistPow[1]:
                 adjust('mouseDistPow', 0.1 * shift, 1, 0.1)
                 break
-            case 'u':
+            case paramKeys.bubbleDistMin[0]:
                 adjust('bubbleDistMin', -1 * shift, 0, 5)
                 break
-            case 'i':
+            case paramKeys.bubbleDistMin[1]:
                 adjust('bubbleDistMin', 1 * shift, 0, 5)
                 break
-            case 'o':
+            case paramKeys.bubbleDistPow[0]:
                 adjust('bubbleDistPow', -0.1 * shift, 1, 0.1)
                 break
-            case 'p':
+            case paramKeys.bubbleDistPow[1]:
                 adjust('bubbleDistPow', 0.1 * shift, 1, 0.1)
                 break
             case ',':

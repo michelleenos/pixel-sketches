@@ -1,60 +1,41 @@
 import GUI from 'lil-gui'
 import { getPaletteVariants } from 'mish-bainrow'
+import { easing, floorToNearest, random } from 'utils'
+import { flowElements } from './flow-elements'
 import type { FlowParams, FlowWorker } from './flow.types'
-import { createElement, easing, random } from 'utils'
 
-const palettes = getPaletteVariants({
-    isolateColors: true,
-})
+const palettes = getPaletteVariants({ isolateColors: true })
 const palette = random(palettes)
 
 const params: FlowParams = {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    colorCycles: 6,
-    maxSteps: 500,
+    width: Math.min(floorToNearest(window.innerWidth - 100, 10), 800),
+    height: Math.min(floorToNearest(window.innerHeight - 100, 10), 900),
+    maxSteps: 400,
     minSteps: 10,
     stepLength: 4,
     lineWidthMax: 7,
     lineWidthMin: 0.5,
-    gridSize: 60,
+    gridSize: 80,
     noiseMult: 0.1,
-    minSpace: 4,
+    minSpace: 6,
     taperEase: 'outCirc',
     taperLength: 200,
     palette: palette,
-    shouldDrawField: false,
-    drawStrategy: { type: 'circlePack', radius: 8, maxAttempts: 70 },
+    drawStrategy: { type: 'grid', spacing: 10 },
 }
 
 const sizes = {
     width: params.width,
     height: params.height,
     pixelRatio: Math.min(window.devicePixelRatio, 2),
-    useWindowSize: true,
 }
 
-// *************** Elements *************** //
-
-const canvas = createElement('canvas', { style: 'display:block' })
-const loading = createElement(
-    'div',
-    {
-        style: 'background:#fff;text-align:center;display:flex;align-items:center;justify-content:center;font-size:18px;position:absolute;width:100%;height:100%;top:0;left:0;color:#000;font-weight:600;opacity:0.8',
-    },
-    ['drawing...'],
-)
-const container = createElement('div', { style: 'position:relative;display:inline-block;' }, [
-    canvas,
-    loading,
-])
-document.body.appendChild(container)
+const { canvas, loading } = flowElements()
 
 // *************** Worker *************** //
 
 const offscreenCanvas = canvas.transferControlToOffscreen()
-let workerBusy = false
-let pendingUpdate = false
+let workerStatus = { busy: false, pendingUpdate: false, shouldRegenerate: false }
 
 const worker = new Worker(new URL('./sketch.worker.ts', import.meta.url)) as FlowWorker
 worker.postMessage({ type: 'init', canvas: offscreenCanvas, params }, [offscreenCanvas])
@@ -62,21 +43,23 @@ worker.postMessage({ type: 'init', canvas: offscreenCanvas, params }, [offscreen
 worker.onmessage = (e) => {
     const type = e.data.type
     if (type === 'start') {
-        workerBusy = true
+        workerStatus.busy = true
         loading.style.display = 'flex'
     } else if (type === 'done') {
-        workerBusy = false
+        workerStatus.busy = false
         loading.style.display = 'none'
-        if (pendingUpdate) sendUpdate()
+        if (workerStatus.pendingUpdate) sendUpdate(workerStatus.shouldRegenerate)
     }
 }
 
-function sendUpdate() {
-    if (workerBusy) {
-        pendingUpdate = true
+function sendUpdate(regenerate: boolean) {
+    if (workerStatus.busy) {
+        workerStatus.pendingUpdate = true
+        workerStatus.shouldRegenerate = regenerate
     } else {
-        worker.postMessage({ type: 'update', params })
-        pendingUpdate = false
+        worker.postMessage({ type: 'update', params, regenerate })
+        workerStatus.pendingUpdate = false
+        workerStatus.shouldRegenerate = false
     }
 }
 
@@ -95,8 +78,8 @@ setSize()
 const debg = {
     reseed: () => worker.postMessage({ type: 'reseed' }),
     palette: palette.name,
-    drawStrategyType: 'circlePack' as 'grid' | 'circlePack' | 'random',
-    drawGridParams: { spacing: 20 },
+    drawStrategyType: 'grid' as 'grid' | 'circlePack' | 'random',
+    drawGridParams: { spacing: 10 },
     drawRandomParams: { count: 800 },
     drawCircleParams: { radius: 8, maxAttempts: 70 },
 }
@@ -107,37 +90,26 @@ f.add(params, 'stepLength', 0.1, 30, 0.1)
 f.add(params, 'maxSteps', 1, 2000, 1)
 f.add(params, 'minSteps', 1, 1000, 1)
 f.add(params, 'gridSize', 1, 250, 1)
-f.add(params, 'colorCycles', 1, 30, 1)
-f.add(params, 'lineWidthMax', 0.5, 20, 0.5)
-f.add(params, 'lineWidthMin', 0.1, 20, 0.1)
 f.add(params, 'noiseMult', 0, 2, 0.01)
-f.add(params, 'taperEase', Object.keys(easing))
-f.add(params, 'taperLength', 1, 800, 1)
 f.add(params, 'minSpace', 0.1, 20, 0.1)
-f.add(params, 'shouldDrawField')
-f.add(
+f.onFinishChange(() => sendUpdate(true))
+
+const drf = gui.addFolder('drawing')
+drf.add(params, 'lineWidthMax', 0.5, 20, 0.5)
+drf.add(params, 'lineWidthMin', 0.1, 20, 0.1)
+drf.add(params, 'taperEase', Object.keys(easing))
+drf.add(params, 'taperLength', 1, 800, 1)
+drf.add(
     params,
     'palette',
     palettes.reduce((list, palette) => ({ ...list, [palette.name]: palette }), {}),
 )
-f.onFinishChange(sendUpdate)
+drf.onFinishChange(() => sendUpdate(false))
 
 const sf = gui.addFolder('size')
-sf.add(sizes, 'useWindowSize').onChange((val: boolean) => {
-    if (val) {
-        sizes.width = window.innerWidth
-        sizes.height = window.innerHeight
-        setSize()
-        whctrls.forEach((c) => c.hide())
-    } else {
-        whctrls.forEach((c) => c.show())
-    }
-})
-const whctrls = [sf.add(sizes, 'width', 10, 3000, 1), sf.add(sizes, 'height', 10, 3000, 1)]
-whctrls.forEach((c) => {
-    c.onFinishChange(setSize)
-    c.hide()
-})
+sf.add(sizes, 'width', 10, 3000, 10)
+sf.add(sizes, 'height', 10, 3000, 10)
+sf.onChange(setSize)
 
 const df = gui.addFolder('drawStrategy').onFinishChange(() => {
     let type = debg.drawStrategyType
@@ -148,7 +120,7 @@ const df = gui.addFolder('drawStrategy').onFinishChange(() => {
     } else {
         params.drawStrategy = { type: 'random', ...debg.drawRandomParams }
     }
-    sendUpdate()
+    sendUpdate(true)
 })
 df.add(debg, 'drawStrategyType', ['grid', 'circlePack', 'random']).onFinishChange(
     (val: 'grid' | 'circlePack' | 'random') => drawFolderShow(val),

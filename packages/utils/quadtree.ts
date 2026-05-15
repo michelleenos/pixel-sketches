@@ -57,6 +57,7 @@ export class QuadTree {
         if (this.isLeaf) {
             if (this.points.length < this.capacity) {
                 this.points.push(point)
+
                 return true
             } else if (this.children.length === 0) {
                 this.subdivide()
@@ -164,6 +165,7 @@ export class QuadTree {
     clear() {
         this.points = []
         this.children = []
+        this.isLeaf = true
         this._count = null
         this._maxDepth = this.depth
     }

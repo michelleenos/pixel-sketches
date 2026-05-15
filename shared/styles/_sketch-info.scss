@@ -6,7 +6,7 @@
     left: 0.5rem;
     display: grid;
     grid-template-columns: 2rem 1fr;
-    color: #fff;
+    color: var(--text);
     border-radius: 1rem;
     padding: 0.5rem;
     column-gap: 0.75rem;
@@ -55,6 +55,7 @@
 
     &__description {
         margin-top: 1rem;
+        font-size: 14px;
 
         p:not(:last-child) {
             margin-bottom: 0.5em;
@@ -63,12 +64,26 @@
 
     &__link-wrap {
         margin-top: 1rem;
-        // text-align: right;
+    }
+
+    a {
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 2px;
+        text-decoration-color: hsla(from var(--primary) h s l / 0.3);
+        transition-property: text-decoration-color;
+        transition-timing-function: ease;
+        transition-duration: 300ms;
+
+        &:hover,
+        &:focus {
+            text-decoration-color: var(--primary);
+        }
     }
 
     &--open {
         background: rgba(var(--bg-rgb), 0.8);
-        background: hsla(from var(--bg) h s calc(l * 0.5) / 0.8);
+        background: hsla(from var(--bg) h s calc(l * 0.5) / 0.93);
         width: clamp(250px, 30vw, 320px);
 
         .sketchinfo__content-wrap {

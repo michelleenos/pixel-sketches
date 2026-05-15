@@ -9,9 +9,10 @@ let canvas: OffscreenCanvas
 let ctx: OffscreenCanvasRenderingContext2D
 let flow: Flow
 
-function drawFlow() {
+function drawFlow(regenerate: boolean) {
     self.postMessage({ type: 'start' })
-    flow.generateAndDraw()
+    if (regenerate) flow.generate()
+    flow.draw()
     self.postMessage({ type: 'done' })
 }
 
@@ -21,20 +22,29 @@ self.onmessage = (e: MessageEvent<ToFlowWorker>) => {
         canvas = msg.canvas
         ctx = canvas.getContext('2d')!
         flow = new Flow(ctx, msg.params)
+
+        console.log({
+            stepLength: flow.stepLength,
+            maxSteps: flow.maxSteps,
+            minSteps: flow.minSteps,
+            minSpace: flow.minSpace,
+            gridSize: flow.gridSize,
+            noiseMult: flow.noiseMult,
+        })
     } else if (msg.type === 'draw') {
-        drawFlow()
+        drawFlow(msg.regenerate)
     } else if (msg.type === 'update') {
         Object.assign(flow, msg.params)
-        drawFlow()
+        drawFlow(msg.regenerate)
     } else if (msg.type === 'reseed') {
         flow.reseed()
-        drawFlow()
+        drawFlow(true)
     } else if (msg.type === 'setSize') {
         let sizes = msg.sizes
         canvas.width = sizes.width * sizes.pixelRatio
         canvas.height = sizes.height * sizes.pixelRatio
         ctx.scale(sizes.pixelRatio, sizes.pixelRatio)
         flow.setSize(msg.sizes)
-        drawFlow()
+        drawFlow(true)
     }
 }

@@ -6,6 +6,9 @@ export function map(num: number, inMin: number, inMax: number, outMin: number, o
     return ((num - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
 }
 
+// Notes about Math.random() and bias:
+// - https://github.com/ckknight/random-js
+// - https://stackoverflow.com/questions/71446632/generating-unbiased-random-float-numbers-0-1-in-javascript
 export function random(): number
 export function random(max: number): number
 export function random(minOrMax: number, max: number): number
@@ -49,24 +52,34 @@ export function smoothstep(edge0: number, edge1: number, value: number) {
 }
 
 /**
- * shuffle an array in place
+ * shuffle an array according to fisher-yates algorithm
+ * either modifying it in place or returning a new array
  */
-export function shuffle<T>(array: T[]) {
-    let currentIndex = array.length
+export function shuffle<T>(array: T[], inPlace = true) {
+    let arr = inPlace ? array : [...array]
+    let currentIndex = arr.length
     let randomIndex
 
     while (0 !== currentIndex) {
         randomIndex = Math.floor(Math.random() * currentIndex)
         currentIndex -= 1
-        ;[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
+        ;[arr[currentIndex], arr[randomIndex]] = [arr[randomIndex], arr[currentIndex]]
     }
 
-    return array
+    return arr
 }
 
 export function round(num: number, precision = 1) {
     const factor = Math.pow(10, precision)
     return Math.round(num * factor) / factor
+}
+
+export function floorToNearest(value: number, multiple: number) {
+    return Math.floor(value / multiple) * multiple
+}
+
+export function roundToNearest(value: number, multiple: number) {
+    return Math.round(value / multiple) * multiple
 }
 
 export function clamp(num: number, min: number, max: number) {

@@ -59,13 +59,12 @@ export class Flow {
     stepLength: number = 4
     maxSteps = 50
     minSteps = 10
-    shouldDrawField = false
-    colorCycles = 6
     lineWidthMax = 7
     lineWidthMin = 0.5
     minSpace = 3
     taperEase: Easing = 'outCirc'
     taperLength = 200
+    curves: Curves
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 
     constructor(
@@ -77,7 +76,6 @@ export class Flow {
 
         if (params.stepLength !== undefined) this.stepLength = params.stepLength
         if (params.maxSteps !== undefined) this.maxSteps = params.maxSteps
-        if (params.colorCycles !== undefined) this.colorCycles = params.colorCycles
         if (params.lineWidthMax !== undefined) this.lineWidthMax = params.lineWidthMax
         if (params.lineWidthMin !== undefined) this.lineWidthMin = params.lineWidthMin
         if (params.taperEase !== undefined) this.taperEase = params.taperEase
@@ -90,7 +88,7 @@ export class Flow {
 
         let diffX = this.fieldSize.width - this.drawSize.width
         let diffY = this.fieldSize.height - this.drawSize.height
-        this._drawBounds = new Bounds(0, 0, this.drawSize.width, this.drawSize.height)
+        this._drawBounds = new Bounds(0, this.drawSize.width, 0, this.drawSize.height)
         this._fieldBounds = new Bounds(
             -diffX / 2,
             this.drawSize.width + diffX / 2,
@@ -105,12 +103,21 @@ export class Flow {
         })
 
         this.noise = createNoise2D()
+        this.curves = new Curves({
+            bounds: this._fieldBounds,
+            fn: this.getNextPoint,
+            minSpace: this.minSpace,
+        })
 
         this._colorScale = chroma.scale(this.palette.colors).mode('hsl')
     }
 
     set gridSize(n: number) {
         this.field.gridSize = n
+    }
+
+    get gridSize() {
+        return this.field.gridSize
     }
 
     set palette(p: { colors: string[]; bg: string }) {
@@ -129,7 +136,7 @@ export class Flow {
         this.fieldSize = { width: this.drawSize.width * 2, height: this.drawSize.height * 2 }
         let diffX = this.fieldSize.width - this.drawSize.width
         let diffY = this.fieldSize.height - this.drawSize.height
-        this._drawBounds = new Bounds(0, 0, this.drawSize.width, this.drawSize.height)
+        this._drawBounds = new Bounds(0, this.drawSize.width, 0, this.drawSize.height)
         this._fieldBounds = new Bounds(
             -diffX / 2,
             this.drawSize.width + diffX / 2,
@@ -137,6 +144,7 @@ export class Flow {
             this.drawSize.height + diffY / 2,
         )
         this.field.bounds = this._fieldBounds
+        this.curves.bounds = this._fieldBounds
     }
 
     getTaper = (i: number, curveLen: number) => {
@@ -158,12 +166,19 @@ export class Flow {
 
     getAngle = (x: number, y: number) => {
         let n = this.noise(x * this.noiseMult, y * this.noiseMult)
+        // let nx = Math.sin(x * (1 / (this._fieldBounds.width * 0.0025))) + Math.cos(y * 0.078) + x
+        // let ny = Math.cos(y * (1 / (this._fieldBounds.height * 0.0048))) + Math.sin(x * 0.01) + y
+        // let angle = Math.atan2(ny - y, nx - x)
+        // let n = Math.sin(x * 5.05 + Math.cos(y * -5.8) * Math.sin(x * 50))
+        // n = Math.cos(n * y - y * 2.235 + x * 1.5)
         n = map(n, -1, 1, -Math.PI, Math.PI)
         return n
     }
 
     getNextPoint = ([x, y]: [number, number]) => {
         let angle = this.field.getValue(x, y)
+        // let xStep = Math.pow(Math.cos(angle), 3) * this.stepLength
+        // let yStep = Math.pow(Math.sin(angle), 3) * this.stepLength
         let xStep = this.stepLength * Math.cos(angle)
         let yStep = this.stepLength * Math.sin(angle)
         return [x + xStep, y + yStep] as [number, number]
@@ -184,20 +199,12 @@ export class Flow {
             ctx.moveTo(prev[0], prev[1])
             ctx.lineTo(cur[0], cur[1])
             ctx.stroke()
-
-            // const blur = Math.min(taper * 0.5, 1.5)
-            // for (let j = 0; j < 1; j++) {
-            //     ctx.beginPath()
-            //     ctx.moveTo(prev[0] + random(-blur, blur), prev[1] + random(-blur, blur))
-            //     ctx.lineTo(cur[0] + random(-blur, blur), cur[1] + random(-blur, blur))
-            //     ctx.stroke()
-            // }
         }
     }
 
     generateCurves = () => {
-        let curves = new Curves(this._fieldBounds, this.getNextPoint)
-        curves.minSpace = this.minSpace
+        this.curves.clear()
+        this.curves.minSpace = this.minSpace
 
         const strategy = this.drawStrategy
         let startPoints: [number, number][] = []
@@ -229,26 +236,23 @@ export class Flow {
         }
 
         startPoints.forEach((point) => {
-            curves.attemptGenerate(point, this.minSteps, this.maxSteps)
+            this.curves.attemptGenerate(point, this.minSteps, this.maxSteps)
         })
-
-        return curves
     }
 
-    generateAndDraw = () => {
+    generate = () => {
+        this.field.generate()
+        this.generateCurves()
+    }
+
+    draw = () => {
         const { ctx } = this
-        const colors = this._palette.colors
-            .map((c) => chroma(c))
-            .sort((a, b) => a.temperature() - b.temperature())
 
         ctx.fillStyle = this.palette.bg
         ctx.fillRect(0, 0, this.drawSize.width, this.drawSize.height)
+        console.log(this.curves.curves.length)
 
-        this.field.generate()
-        if (this.shouldDrawField) this.field.draw(ctx)
-
-        let curves = this.generateCurves()
-        curves.curves.forEach((curve) => {
+        this.curves.curves.forEach((curve) => {
             this.drawGeneratedCurve(curve.points)
         })
     }
