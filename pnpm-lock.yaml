@@ -189,6 +189,19 @@ importers:
         specifier: workspace:*
         version: link:../../packages/utils
 
+  sketches/012-flow-curves-2:
+    dependencies:
+      chroma-js:
+        specifier: ^3.2.0
+        version: 3.2.0
+      utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
+    devDependencies:
+      '@types/chroma-js':
+        specifier: ^3.1.2
+        version: 3.1.2
+
 packages:
 
   '@babel/runtime@7.29.2':
