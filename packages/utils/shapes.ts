@@ -49,7 +49,7 @@ export class Bounds {
     }
 
     contains(x: number, y: number) {
-        return x >= this.x1 && x <= this.x2 && y >= this.y1 && y <= this.y2
+        return x >= this.x1 && x < this.x2 && y >= this.y1 && y < this.y2
     }
 
     intersects(x1: number, y1: number, x2: number, y2: number): boolean

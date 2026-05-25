@@ -11,15 +11,19 @@ export class QuadTree {
     _maxDepth: number | null = null
     _count: number | null = null
 
+    depthLimit: number
+
     constructor(
         bounds: Bounds | [number, number, number, number],
         capacity = 4,
+        depthLimit = 20,
         depth = 0,
         parent: QuadTree | null = null,
     ) {
         this.bounds = bounds instanceof Bounds ? bounds : new Bounds(...bounds)
         this.depth = depth
         this.capacity = capacity
+        this.depthLimit = depthLimit
         this._maxDepth = depth
         this._count = 0
         if (parent) this.parent = parent
@@ -48,29 +52,36 @@ export class QuadTree {
     }
 
     insert(point: [number, number]) {
-        this._count = null
+        try {
+            this._count = null
 
-        if (!this.bounds.contains(...point)) {
+            if (!this.bounds.contains(...point)) {
+                return false
+            }
+
+            if (this.isLeaf) {
+                if (this.points.length < this.capacity) {
+                    this.points.push(point)
+                    return true
+                } else if (this.children.length === 0) {
+                    if (this.depth >= this.depthLimit) {
+                        this.points.push(point)
+                        return true
+                    }
+                    this.subdivide()
+                }
+            }
+
+            for (let i = 0; i < this.children.length; i++) {
+                if (this.children[i].insert(point)) {
+                    return true
+                }
+            }
+            return false
+        } catch (e) {
+            console.log(point, this)
             return false
         }
-
-        if (this.isLeaf) {
-            if (this.points.length < this.capacity) {
-                this.points.push(point)
-
-                return true
-            } else if (this.children.length === 0) {
-                this.subdivide()
-            }
-        }
-
-        for (let i = 0; i < this.children.length; i++) {
-            if (this.children[i].insert(point)) {
-                return true
-            }
-        }
-
-        return false
     }
 
     subdivide() {
@@ -84,24 +95,28 @@ export class QuadTree {
         let ne = new QuadTree(
             [x1 + halfWidth, x2, y1, y1 + halfHeight],
             this.capacity,
+            this.depthLimit,
             this.depth + 1,
             this,
         )
         let nw = new QuadTree(
             [x1, x1 + halfWidth, y1, y1 + halfHeight],
             this.capacity,
+            this.depthLimit,
             this.depth + 1,
             this,
         )
         let se = new QuadTree(
             [x1 + halfWidth, x2, y1 + halfHeight, y2],
             this.capacity,
+            this.depthLimit,
             this.depth + 1,
             this,
         )
         let sw = new QuadTree(
             [x1, x1 + halfWidth, y1 + halfHeight, y2],
             this.capacity,
+            this.depthLimit,
             this.depth + 1,
             this,
         )
@@ -127,6 +142,33 @@ export class QuadTree {
         }
 
         return children
+    }
+
+    paddedConflicts(point: [number, number], padding: number) {
+        return this.conflicts(
+            new Bounds(
+                point[0] - padding,
+                point[0] + padding,
+                point[1] - padding,
+                point[1] + padding,
+            ),
+        )
+    }
+
+    conflicts(range: Bounds) {
+        if (!this.bounds.intersects(range)) {
+            return false
+        }
+
+        for (let i = 0; i < this.points.length; i++) {
+            if (range.contains(...this.points[i])) return true
+        }
+
+        for (let i = 0; i < this.children.length; i++) {
+            if (this.children[i].conflicts(range)) return true
+        }
+
+        return false
     }
 
     query(range: Bounds) {

@@ -107,7 +107,6 @@ export class FixedFpsLoop {
     }
 
     _onVisibilityChange() {
-        console.log('visibility change', this)
         if (document.visibilityState === 'visible' && this.looping) {
             this._then = performance.now()
         }
