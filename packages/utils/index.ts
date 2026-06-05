@@ -1,4 +1,5 @@
 export * from './math'
+export * from './random'
 export * from './canvas'
 export * from './save-canvas'
 export * from './code-art-types'
