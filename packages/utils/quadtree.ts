@@ -145,14 +145,24 @@ export class QuadTree {
     }
 
     paddedConflicts(point: [number, number], padding: number) {
-        return this.conflicts(
-            new Bounds(
-                point[0] - padding,
-                point[0] + padding,
-                point[1] - padding,
-                point[1] + padding,
-            ),
+        return this.conflictsRect(
+            point[0] - padding,
+            point[0] + padding,
+            point[1] - padding,
+            point[1] + padding,
         )
+    }
+
+    conflictsRect(x1: number, x2: number, y1: number, y2: number) {
+        if (!this.bounds.intersects(x1, y1, x2, y2)) return false
+        for (let i = 0; i < this.points.length; i++) {
+            const [px, py] = this.points[i]
+            if (px >= x1 && px <= x2 && py >= y1 && py <= y2) return true
+        }
+        for (let i = 0; i < this.children.length; i++) {
+            if (this.children[i].conflictsRect(x1, x2, y1, y2)) return true
+        }
+        return false
     }
 
     conflicts(range: Bounds) {

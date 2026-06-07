@@ -15,7 +15,9 @@ export const flowElements = (margin = 50) => {
         [canvas, loading],
     )
 
-    document.body.appendChild(container)
+    const stats = createElement('div', { style: 'margin: 20px' })
 
-    return { canvas, loading, container }
+    document.body.append(container, stats)
+
+    return { canvas, loading, container, stats }
 }

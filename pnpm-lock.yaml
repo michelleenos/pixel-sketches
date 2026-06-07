@@ -194,6 +194,9 @@ importers:
       chroma-js:
         specifier: ^3.2.0
         version: 3.2.0
+      nanoevents:
+        specifier: ^9.1.0
+        version: 9.1.0
       utils:
         specifier: workspace:*
         version: link:../../packages/utils
