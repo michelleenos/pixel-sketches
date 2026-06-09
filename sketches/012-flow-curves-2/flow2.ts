@@ -55,34 +55,42 @@ type Curve = {
     color: string
 }
 
-const flowDefaults: Required<Omit<FlowParams, 'width' | 'height' | 'palette' | 'vals'>> = {
-    stepLength: 4,
-    maxSteps: 50,
+export const flowDefaults: Required<Omit<FlowParams, 'width' | 'height' | 'palette' | 'vals'>> = {
+    stepLength: 1,
+    maxSteps: 200,
     minSteps: 10,
     lineWidthMax: 7,
     lineWidthMin: 0.5,
+    decreaseStep: 5,
     minSpace: 6,
-    maxFails: 300,
+    maxFailsMin: 300,
+    maxFailsMax: 300,
+    scale: 1 / 800,
+    offset: 1,
+    minInitialCurves: 3,
     taperEase: 'outCirc',
-    taperLength: 200,
+    taperLength: 100,
     colorRepeats: 1,
     colorsMethod: 'clumps',
     colorRandomDist: 200,
     showColors: false,
     lineCap: 'round',
-    brightenMax: 0.5,
-    brightenMin: -0.5,
+    brightenMax: 0,
+    brightenMin: 0,
+    qtCapacity: 20,
+    liveInterval: 10,
 }
 
 export class Flow {
     _palette: { bg: string; colors: string[] } = { bg: '#121212', colors: ['#ffffff'] }
     _colorSeeds!: { color: string; x: number; y: number }[]
-    _scale: number
-    _offset: number
+    scale: number
+    offset: number
     _bounds: Bounds
     _colorRepeats: number
     _colorsMethod: 'clumps' | 'hue' | 'temp'
     _colorRandomDist: number
+    _qtCapacity: number
     brightenMax: number
     brightenMin: number
     showColors = false
@@ -90,9 +98,13 @@ export class Flow {
     margin = 25
     stepLength: number
     maxSteps: number
-    maxFails: number
+    maxFailsMax: number
+    maxFailsMin: number
+    // maxFailsIncrease: number
     minSteps: number
     minSpace: number
+    minInitialCurves: number
+    decreaseStep: number
     lineCap: 'round' | 'square'
     lineWidthMax: number
     lineWidthMin: number
@@ -100,6 +112,7 @@ export class Flow {
     taperEase: Easing
     qt: QuadTree
     curves: Curve[] = []
+    liveInterval: number
 
     constructor(params: FlowParams) {
         this.stepLength = params.stepLength ?? flowDefaults.stepLength
@@ -107,17 +120,24 @@ export class Flow {
         this.minSteps = params.minSteps ?? flowDefaults.minSteps
         this.lineWidthMax = params.lineWidthMax ?? flowDefaults.lineWidthMax
         this.lineWidthMin = params.lineWidthMin ?? flowDefaults.lineWidthMin
+        this.scale = params.scale ?? flowDefaults.scale
+        this.offset = params.offset ?? flowDefaults.offset
         this.minSpace = params.minSpace ?? flowDefaults.minSpace
-        this.maxFails = params.maxFails ?? flowDefaults.maxFails
+        this.maxFailsMax = params.maxFailsMax ?? flowDefaults.maxFailsMax
+        this.maxFailsMin = params.maxFailsMin ?? flowDefaults.maxFailsMin
         this.taperEase = params.taperEase ?? flowDefaults.taperEase
         this.taperLength = params.taperLength ?? flowDefaults.taperLength
         this.lineCap = params.lineCap ?? flowDefaults.lineCap
+        this.decreaseStep = params.decreaseStep ?? flowDefaults.decreaseStep
+        this.minInitialCurves = params.minInitialCurves ?? flowDefaults.minInitialCurves
         this.brightenMax = params.brightenMax ?? flowDefaults.brightenMax
         this.brightenMin = params.brightenMin ?? flowDefaults.brightenMin
         this._colorRepeats = params.colorRepeats ?? flowDefaults.colorRepeats
         this._colorsMethod = params.colorsMethod ?? flowDefaults.colorsMethod
         this.showColors = params.showColors ?? flowDefaults.showColors
         this._colorRandomDist = params.colorRandomDist ?? flowDefaults.colorRandomDist
+        this._qtCapacity = params.qtCapacity ?? flowDefaults.qtCapacity
+        this.liveInterval = params.liveInterval ?? flowDefaults.liveInterval
         this.vals = params.vals ?? randomFlowVals()
 
         this._palette = params.palette ?? { bg: '#121212', colors: ['#ffffff'] }
@@ -129,13 +149,14 @@ export class Flow {
             params.height - this.margin,
         )
 
-        this._scale = 1 / this._bounds.width
-        this._offset = this._scale * 50
+        // this._scale = 1 / this._bounds.width
+        // this._offset = this._scale * 50
 
-        this.qt = new QuadTree(this._bounds, 16)
+        this.qt = new QuadTree(this._bounds, this._qtCapacity)
         this.setSize({ width: params.width, height: params.height })
     }
 
+    // TODO fix issue with palette set when it has one extra color
     set palette(p: { colors: string[]; bg: string }) {
         if (this._palette.bg === p.bg && this._palette.colors.every((c) => p.colors.includes(c)))
             return
@@ -173,9 +194,13 @@ export class Flow {
         this.updateCurveColors()
     }
 
-    setSize = (size: { width: number; height: number }) => {
-        console.log(size.width, size.height)
+    set qtCapacity(val: number) {
+        if (val === this._qtCapacity) return
+        this._qtCapacity = val
+        this.qt = new QuadTree(this._bounds, this._qtCapacity)
+    }
 
+    setSize = (size: { width: number; height: number }) => {
         this._bounds.x2 = size.width > this.margin * 2 ? size.width - this.margin : size.width
         this._bounds.y2 = size.height > this.margin * 2 ? size.height - this.margin : size.height
         this.qt.clear()
@@ -195,8 +220,8 @@ export class Flow {
         const c = chroma(baseColor)
         const angle = this.getAngle(point[0], point[1])
 
-        let brightAmt = map(Math.sin(angle), -1, 1, this.brightenMin, this.brightenMax)
-        return c.brighten(brightAmt).css()
+        let amt = map(Math.sin(angle), -1, 1, this.brightenMin, this.brightenMax)
+        return c.brighten(amt).css()
     }
 
     getCurveColor = (points: [number, number][]) => {
@@ -211,6 +236,7 @@ export class Flow {
             const dyb = y - b.y
             return dxa * dxa + dya * dya < dxb * dxb + dyb * dyb ? a : b
         })
+
         return nearest.color
     }
 
@@ -290,8 +316,8 @@ export class Flow {
     }
 
     getAngle = (x: number, y: number) => {
-        const xv = x * this._scale + this._offset
-        const yv = y * this._scale + this._offset
+        const xv = x * this.scale + this.offset
+        const yv = y * this.scale + this.offset
         const fx = Math.sin(xv * this.vals[0] + Math.cos(yv * this.vals[1]))
         const fy = -Math.cos(yv * this.vals[2] - Math.sin(xv * this.vals[3]))
         const a = Math.atan2(fy, fx)
@@ -312,6 +338,7 @@ export class Flow {
         ctx.lineCap = this.lineCap
 
         if (this.lineWidthMin === this.lineWidthMax) {
+            ctx.strokeStyle = color
             ctx.beginPath()
             ctx.lineWidth = this.lineWidthMax
             ctx.moveTo(points[0][0], points[0][1])
@@ -338,15 +365,15 @@ export class Flow {
 
     getPointFromCurve = (points: [number, number][]): [number, number] => {
         let index = Math.floor(random(1, points.length))
+        index = random() > 0.5 ? points.length - 1 : 1
+
         let p = points[index]
         let prev = points[index - 1]
         let dx = p[0] - prev[0]
         let dy = p[1] - prev[1]
         let turned = random() < 0.5 ? Math.atan2(-dx, dy) : Math.atan2(dx, -dy) // rotated 90 deg
-        return [
-            p[0] + Math.cos(turned) * (this.minSpace * 3),
-            p[1] + Math.sin(turned) * (this.minSpace * 3),
-        ]
+        const dist = random(this.minSpace, this.minSpace * 3)
+        return [p[0] + Math.cos(turned) * dist, p[1] + Math.sin(turned) * dist]
     }
 
     getRandomPoint = (margin = 0.15): [number, number] => {
@@ -359,19 +386,18 @@ export class Flow {
 
     addCurve = (points: [number, number][]) => {
         const color = this.getCurveColor(points)
-        this.curves.push({
-            points,
-            color,
-        })
+        const curve = { points, color }
+        this.curves.push(curve)
         points.forEach((p) => this.qt.insert(p))
-        return points
+        return curve
     }
 
     getInitialCurves = async (
         minLength: number,
         idealCount: number,
         maxFails: number,
-        ctxForLive?: DrawCtx,
+        ctx: DrawCtx,
+        live = false,
     ) => {
         let fails = 0
         let created = 0
@@ -381,13 +407,12 @@ export class Flow {
             maxFails,
         ).map((c) => [c.x, c.y])
         let point: [number, number]
-
         while (initPoints.length > 0 && created < idealCount && fails < maxFails) {
             point = initPoints.pop()!
             let points = this.attemptCurve(point, minLength)
             if (points.length >= minLength) {
                 this.addCurve(points)
-                if (ctxForLive) await this.drawWithTimeout(ctxForLive, 50)
+                if (live) await this.drawWithTimeout(ctx)
                 created++
                 fails = 0
             } else {
@@ -399,46 +424,52 @@ export class Flow {
     }
 
     generate = async (liveDraw = true, ctx: DrawCtx) => {
+        let start = performance.now()
+
         this.curves = []
         this.qt.clear()
 
-        if (liveDraw) await this.drawWithTimeout(ctx, 50)
+        if (liveDraw) await this.drawWithTimeout(ctx)
 
-        let maxFails = this.maxFails
+        let maxFails = this.maxFailsMin
         let fails = 0
         let idealLen = this.maxSteps
 
         let initialCurves = 0
-        let minInitial = 3
+        let minInitial = this.minInitialCurves
         while (initialCurves < minInitial && idealLen >= this.minSteps) {
             initialCurves += await this.getInitialCurves(
                 idealLen,
                 minInitial * 2,
                 maxFails,
-                liveDraw ? ctx : undefined,
+                ctx,
+                liveDraw,
             )
-            if (initialCurves < minInitial) idealLen -= 5
+            console.log(`have ${initialCurves} initial curves (idealLen ${idealLen})`)
+            if (initialCurves < minInitial) idealLen -= this.decreaseStep
         }
 
+        const neighborCurves: Curve[] = [...this.curves]
+        let decreases = 0
         let point =
             this.curves.length > 0 ?
-                this.getPointFromCurve(random(this.curves).points)
+                this.getPointFromCurve(neighborCurves.pop()!.points)
             :   this.getRandomPoint(0)
         let randomCount = 0
         let nextPointGen: 'random' | 'neighbor' = 'neighbor'
 
-        while (fails < maxFails && idealLen > this.minSteps) {
+        while (fails < maxFails && idealLen >= this.minSteps) {
             let points = this.attemptCurve(point, idealLen)
             if (points.length >= idealLen) {
-                let addedCurve = this.addCurve(points)
+                const addedCurve = this.addCurve(points)
+                neighborCurves.push(addedCurve)
+
                 fails = 0
-                if (liveDraw) await this.drawWithTimeout(ctx, 50)
+                if (liveDraw) await this.drawWithTimeout(ctx)
 
                 if (nextPointGen === 'random') {
                     randomCount++
-                    point = this.getPointFromCurve(addedCurve)
                     nextPointGen = 'neighbor'
-                    continue
                 }
             } else {
                 fails++
@@ -448,18 +479,39 @@ export class Flow {
                 if (nextPointGen === 'neighbor') {
                     nextPointGen = 'random'
                 } else {
-                    idealLen -= 10
+                    idealLen -= this.decreaseStep
+                    decreases++
+                    // maxFails = this.maxFails + this.maxFails * this.maxFailsIncrease * decreases
+                    maxFails = map(
+                        idealLen,
+                        this.minSteps,
+                        this.maxSteps,
+                        this.maxFailsMax,
+                        this.maxFailsMin,
+                    )
+
+                    console.log(`maxFails: ${maxFails} / idealLen: ${idealLen}`)
                     nextPointGen = 'neighbor'
                 }
+
                 fails = 0
             }
 
+            if (performance.now() - start > 30000) {
+                console.log('breaking generation loop because more than 30s has passed')
+                break
+            }
+
+            if (neighborCurves.length === 0) {
+                neighborCurves.push(...this.curves)
+            }
             point =
-                nextPointGen === 'neighbor' && this.curves.length > 0 ?
-                    this.getPointFromCurve(random(this.curves).points)
+                nextPointGen === 'neighbor' && neighborCurves.length > 0 ?
+                    this.getPointFromCurve(neighborCurves.pop()!.points)
                 :   this.getRandomPoint(0)
         }
 
+        console.log(`random count: ${randomCount}; total: ${this.curves.length}`)
         if (liveDraw) this.draw(ctx)
     }
 
@@ -501,10 +553,10 @@ export class Flow {
         return [...reversePoints.reverse(), ...points]
     }
 
-    drawWithTimeout = (ctx: DrawCtx, timeout = 100) => {
+    drawWithTimeout = (ctx: DrawCtx) => {
         return new Promise<void>((resolve) => {
             this.draw(ctx)
-            setTimeout(() => resolve(), timeout)
+            setTimeout(() => resolve(), this.liveInterval)
         })
     }
 

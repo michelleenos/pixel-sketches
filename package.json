@@ -15,21 +15,21 @@
     "packageManager": "pnpm@10.13.1",
     "type": "module",
     "devDependencies": {
-        "@types/node": "^25.7.0",
+        "@types/node": "^25.9.2",
         "copy-webpack-plugin": "^13.0.1",
         "css-loader": "^7.1.4",
         "esbuild-loader": "^4.4.3",
         "fast-glob": "^3.3.3",
         "html-webpack-plugin": "^5.6.7",
         "mini-css-extract-plugin": "^2.10.2",
-        "sass-embedded": "^1.99.0",
+        "sass-embedded": "^1.100.0",
         "sass-loader": "^16.0.8",
         "style-loader": "^4.0.0",
-        "ts-loader": "^9.5.7",
+        "ts-loader": "^9.6.0",
         "ts-node": "^10.9.2",
-        "tsx": "^4.21.0",
+        "tsx": "^4.22.4",
         "typescript": "^5.9.3",
-        "webpack": "^5.106.2",
+        "webpack": "^5.107.2",
         "webpack-bundle-analyzer": "^5.3.0",
         "webpack-cli": "^6.0.1",
         "webpack-dev-server": "^5.2.4",
@@ -37,8 +37,8 @@
     },
     "dependencies": {
         "lil-gui": "^0.21.0",
-        "mish-bainrow": "^1.0.24",
-        "p5": "^2.2.3",
+        "mish-bainrow": "^1.0.27",
+        "p5": "^2.3.0",
         "prettier": "^3.8.3"
     }
 }

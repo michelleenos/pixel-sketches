@@ -5,15 +5,22 @@ export type FlowPalette = { bg: string; colors: string[] }
 export interface FlowParams {
     width: number
     height: number
+    scale?: number
+    offset?: number
+    qtCapacity?: number
     stepLength?: number
     maxSteps?: number
     minSteps?: number
+    decreaseStep?: number
     lineWidthMax?: number
     lineWidthMin?: number
     taperEase?: Easing
     taperLength?: number
     minSpace?: number
-    maxFails?: number
+    maxFailsMin?: number
+    maxFailsMax?: number
+    // maxFailsIncrease?: number
+    minInitialCurves?: number
     vals?: FlowVals
     palette?: FlowPalette
     colorsMethod?: 'clumps' | 'hue' | 'temp'
@@ -23,6 +30,7 @@ export interface FlowParams {
     lineCap?: 'round' | 'square'
     brightenMin?: number
     brightenMax?: number
+    liveInterval?: number
 }
 
 export interface GrainParams {

@@ -3,7 +3,9 @@ export function lerp(a: number, b: number, alpha: number) {
 }
 
 export function map(num: number, inMin: number, inMax: number, outMin: number, outMax: number) {
-    return ((num - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
+    const denom = inMax - inMin
+    if (denom === 0) return outMin
+    return ((num - inMin) * (outMax - outMin)) / denom + outMin
 }
 
 export function step(edge: number, value: number) {

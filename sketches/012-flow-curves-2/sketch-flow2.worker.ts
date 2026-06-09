@@ -97,7 +97,6 @@ function setSizes(newSizes: Sizes) {
 
 self.onmessage = (e: MessageEvent<ToFlowWorker>) => {
     const msg = e.data
-    console.log(msg)
     if (msg.type === 'init') {
         let { canvas, params, sizes } = msg
 

@@ -1,6 +1,6 @@
 import { createElement } from 'utils'
 
-export const flowElements = (margin = 50) => {
+export const flowElements = () => {
     const canvas = createElement('canvas', { style: 'display:block' })
     const loading = createElement(
         'div',
@@ -11,7 +11,7 @@ export const flowElements = (margin = 50) => {
     )
     const container = createElement(
         'div',
-        { style: `position:relative;display:inline-block;margin:${margin}px` },
+        { style: `position:relative;display:inline-block;margin:20px 0 0 80px` },
         [canvas, loading],
     )
 

@@ -1,17 +1,16 @@
 import type GUI from 'lil-gui'
 import { getPaletteVariants, type PaletteVariant } from 'mish-bainrow'
-import { random } from 'utils'
 import type { FlowPalette } from './flow2.types'
 
 export const palettes = getPaletteVariants({
     isolateColors: true,
-    minContrastBg: 2,
-    minColors: 3,
-    includePalettes: ['market', 'magritte', 'earthGem2', 'autmn', 'glowFish', 'harimau'],
-    bgColor: {
-        type: 'edge',
-        edge: 20,
-    },
+    // minContrastBg: 1.5,
+    // minColors: 3,
+    // includePalettes: ['market', 'magritte', 'earthGem2', 'autmn', 'glowFish', 'harimau'],
+    // bgColor: {
+    //     type: 'edge',
+    //     edge: 20,
+    // },
 })
 
 export const palettesByName = Object.fromEntries(palettes.map((p) => [p.name, p]))
