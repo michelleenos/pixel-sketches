@@ -11,6 +11,10 @@
     "license": "ISC",
     "packageManager": "pnpm@10.13.1",
     "dependencies": {
+        "jszip": "^3.10.1",
         "utils": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/jszip": "^3.4.1"
     }
 }

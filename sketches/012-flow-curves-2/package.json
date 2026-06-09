@@ -12,10 +12,12 @@
     "packageManager": "pnpm@10.13.1",
     "dependencies": {
         "chroma-js": "^3.2.0",
+        "jszip": "^3.10.1",
         "nanoevents": "^9.1.0",
         "utils": "workspace:*"
     },
     "devDependencies": {
-        "@types/chroma-js": "^3.1.2"
+        "@types/chroma-js": "^3.1.2",
+        "@types/jszip": "^3.4.1"
     }
 }

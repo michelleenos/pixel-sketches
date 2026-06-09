@@ -238,4 +238,137 @@ export const flowPresets = {
             },
         },
     },
+    another: {
+        controllers: { preset: '', liveInterval: 10 },
+        folders: {
+            flow: {
+                controllers: {
+                    stepLength: 1,
+                    maxSteps: 200,
+                    minSteps: 10,
+                    minSpace: 10,
+                    maxFailsMax: 300,
+                    maxFailsMin: 300,
+                    decreaseStep: 5,
+                    minInitialCurves: 5,
+                    qtCapacity: 20,
+                    scale: 0.00125,
+                    offset: 0,
+                },
+                folders: {},
+            },
+            'flow vals': {
+                controllers: { '0': 3.3, '1': 2.8, '2': -0.199999999999999, '3': -1.1 },
+                folders: {},
+            },
+            drawing: {
+                controllers: {
+                    lineWidthMax: 7,
+                    lineWidthMin: 0.5,
+                    taperLength: 100,
+                    lineCap: 'round',
+                    colorRepeats: 2,
+                    colorsMethod: 'temp',
+                    colorRandomDist: 385,
+                    taperEase: 'outCirc',
+                    brightenMin: 0,
+                    brightenMax: 0,
+                    showColors: false,
+                },
+                folders: {},
+            },
+            palette: {
+                controllers: {
+                    palette: {
+                        bg: '#0d0612',
+                        colors: ['#962648', '#e85d32', '#f5b14d', '#9984D4'],
+                        name: 'ember-0',
+                    },
+                    paletteIndex: 19,
+                },
+                folders: {},
+            },
+            size: { controllers: { width: 1000, height: 1000 }, folders: {} },
+            grain: {
+                controllers: {
+                    type: 'none',
+                    adjustAmount: 30,
+                    overAlpha: 1,
+                    overOperation: 'overlay',
+                },
+                folders: {},
+            },
+        },
+    },
+    nice: {
+        controllers: { preset: '', liveInterval: 6 },
+        folders: {
+            flow: {
+                controllers: {
+                    stepLength: 1,
+                    maxSteps: 500,
+                    minSteps: 20,
+                    minSpace: 9,
+                    maxFailsMax: 300,
+                    maxFailsMin: 300,
+                    decreaseStep: 5,
+                    minInitialCurves: 3,
+                    qtCapacity: 20,
+                    scale: 0.00125,
+                    offset: 0,
+                },
+                folders: {},
+            },
+            'flow vals': {
+                controllers: { '0': -0.699999999999999, '1': 0.100000000000001, '2': 2, '3': -9.5 },
+                folders: {},
+            },
+            drawing: {
+                controllers: {
+                    lineWidthMax: 7,
+                    lineWidthMin: 0.5,
+                    taperLength: 100,
+                    lineCap: 'round',
+                    colorRepeats: 3,
+                    colorsMethod: 'temp',
+                    colorRandomDist: 347,
+                    taperEase: 'outCirc',
+                    brightenMin: 0,
+                    brightenMax: 0,
+                    showColors: false,
+                },
+                folders: {},
+            },
+            palette: {
+                controllers: {
+                    palette: {
+                        bg: '#020107',
+                        colors: [
+                            '#87425d',
+                            '#3c2e6b',
+                            '#0081af',
+                            '#a7d6c3',
+                            '#285943',
+                            '#8a8fbd',
+                            '#9a79b8',
+                            '#fcee49',
+                        ],
+                        name: 'earthGem1-0',
+                    },
+                    paletteIndex: 16,
+                },
+                folders: {},
+            },
+            size: { controllers: { width: 1000, height: 1000 }, folders: {} },
+            grain: {
+                controllers: {
+                    type: 'none',
+                    adjustAmount: 30,
+                    overAlpha: 1,
+                    overOperation: 'overlay',
+                },
+                folders: {},
+            },
+        },
+    },
 }

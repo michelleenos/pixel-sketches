@@ -28,6 +28,22 @@ async function regenerateFlow(live: boolean) {
     self.postMessage({ type: 'none' })
 }
 
+async function regenerateFlowRecord() {
+    if (!sketch) return
+    self.postMessage({ type: 'generating-record' })
+
+    const onDraw = async (ctx: OffscreenCanvasRenderingContext2D) => {
+        sketch!.flow.draw(ctx)
+        const blob = await sketch!.canvas.convertToBlob({ type: 'image/png' })
+        self.postMessage({ type: 'frame', blob })
+    }
+
+    await sketch.flow.generate(true, sketch.ctx, onDraw)
+    sketch.flow.draw(sketch.ctx)
+    drawGrain()
+    self.postMessage({ type: 'none' })
+}
+
 function drawGrain() {
     if (!sketch) return
 
@@ -129,6 +145,8 @@ self.onmessage = (e: MessageEvent<ToFlowWorker>) => {
         }
     } else if (msg.type === 'regenerate') {
         regenerateFlow(msg.live)
+    } else if (msg.type === 'regenerate-record') {
+        regenerateFlowRecord()
     } else if (msg.type === 'updateGrain') {
         if (!sketch) return
         Object.assign(sketch.grain, msg.params)

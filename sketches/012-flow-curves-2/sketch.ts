@@ -7,8 +7,9 @@ import type { FlowParams, FlowVals, GrainParams, Sizes } from './flow2.types'
 import { makePalettesGui, palettes } from './flow-palettes'
 import { flowDefaults } from './flow2'
 import { flowPresets } from './presets'
+import { CanvasRecorder } from './recorder'
 
-const USE_MISH_CONTROLS = false
+const USE_MISH_CONTROLS = true
 
 const { canvas, loading, stats } = flowElements()
 
@@ -51,6 +52,7 @@ const sizes: Sizes = {
 
 // *************** Worker *************** //
 
+const recorder = new CanvasRecorder()
 const client = new FlowClient(canvas.transferControlToOffscreen(), params, sizes)
 
 client.on('busy', (status) => {
@@ -58,9 +60,17 @@ client.on('busy', (status) => {
     gui.controllersRecursive().forEach((c) => c.disable())
 })
 
+client.on('frame', (blob) => recorder.addFrame(blob))
+
 client.on('notBusy', () => {
     loading.style.display = 'none'
     gui.controllersRecursive().forEach((c) => c.enable())
+
+    if (recorder.isRecording) {
+        const str = (input: number) => input.toFixed(2).replaceAll('.', 'd')
+        const filename = `flow-${str(params.vals[0])}-${str(params.vals[1])}-${str(params.vals[2])}-${str(params.vals[3])}`
+        recorder.finalize(filename)
+    }
 
     if (USE_MISH_CONTROLS) {
         stats.innerText = client.timings.map((t) => t.toFixed(2)).join(', ')
@@ -179,6 +189,11 @@ const actions = {
         let filename = `flow-${str(params.vals[0])}-${str(params.vals[1])}-${str(params.vals[2])}-${str(params.vals[3])}`
         saveCanvas(canvas, filename, 'png')
     },
+    recordLive() {
+        syncUrl()
+        recorder.start()
+        client.regenerateForRecording()
+    },
 }
 
 gui.add({ preset: '' }, 'preset', flowPresets).onChange((val: any) => {
@@ -192,11 +207,12 @@ gui.add({ preset: '' }, 'preset', flowPresets).onChange((val: any) => {
     guiRefreshing = false
 })
 
-gui.add(params, 'liveInterval', 1, 200, 1)
+gui.add(params, 'liveInterval', 1, 1000, 1).onChange(() => sendUpdate())
 gui.add(actions, 'regenerateLive')
 gui.add(actions, 'regenerate')
 gui.add(actions, 'saveConfig')
 gui.add(actions, 'save')
+gui.add(actions, 'recordLive')
 
 if (USE_MISH_CONTROLS) {
     f.add(params, 'decreaseStep', 1, 50, 1)

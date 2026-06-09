@@ -66,7 +66,7 @@ export const flowDefaults: Required<Omit<FlowParams, 'width' | 'height' | 'palet
     maxFailsMin: 300,
     maxFailsMax: 300,
     scale: 1 / 800,
-    offset: 1,
+    offset: 0,
     minInitialCurves: 3,
     taperEase: 'outCirc',
     taperLength: 100,
@@ -113,6 +113,7 @@ export class Flow {
     qt: QuadTree
     curves: Curve[] = []
     liveInterval: number
+    lastFrame: number | null = null
 
     constructor(params: FlowParams) {
         this.stepLength = params.stepLength ?? flowDefaults.stepLength
@@ -398,6 +399,7 @@ export class Flow {
         maxFails: number,
         ctx: DrawCtx,
         live = false,
+        drawFn = this.drawWithTimeout,
     ) => {
         let fails = 0
         let created = 0
@@ -412,7 +414,7 @@ export class Flow {
             let points = this.attemptCurve(point, minLength)
             if (points.length >= minLength) {
                 this.addCurve(points)
-                if (live) await this.drawWithTimeout(ctx)
+                if (live) await drawFn(ctx)
                 created++
                 fails = 0
             } else {
@@ -423,13 +425,19 @@ export class Flow {
         return created
     }
 
-    generate = async (liveDraw = true, ctx: DrawCtx) => {
+    generate = async (
+        liveDraw = true,
+        ctx: DrawCtx,
+        onDraw?: (ctx: DrawCtx) => Promise<void>,
+    ) => {
+        const drawFn = onDraw ?? this.drawWithTimeout
+
         let start = performance.now()
 
         this.curves = []
         this.qt.clear()
 
-        if (liveDraw) await this.drawWithTimeout(ctx)
+        if (liveDraw) await drawFn(ctx)
 
         let maxFails = this.maxFailsMin
         let fails = 0
@@ -444,6 +452,7 @@ export class Flow {
                 maxFails,
                 ctx,
                 liveDraw,
+                drawFn,
             )
             console.log(`have ${initialCurves} initial curves (idealLen ${idealLen})`)
             if (initialCurves < minInitial) idealLen -= this.decreaseStep
@@ -465,7 +474,7 @@ export class Flow {
                 neighborCurves.push(addedCurve)
 
                 fails = 0
-                if (liveDraw) await this.drawWithTimeout(ctx)
+                if (liveDraw) await drawFn(ctx)
 
                 if (nextPointGen === 'random') {
                     randomCount++
@@ -497,10 +506,10 @@ export class Flow {
                 fails = 0
             }
 
-            if (performance.now() - start > 30000) {
-                console.log('breaking generation loop because more than 30s has passed')
-                break
-            }
+            // if (performance.now() - start > 30000) {
+            //     console.log('breaking generation loop because more than 30s has passed')
+            //     break
+            // }
 
             if (neighborCurves.length === 0) {
                 neighborCurves.push(...this.curves)
@@ -554,9 +563,16 @@ export class Flow {
     }
 
     drawWithTimeout = (ctx: DrawCtx) => {
+        const now = performance.now()
+        const elapsed = this.lastFrame ? now - this.lastFrame : 0
+        const wait = Math.max(this.liveInterval - elapsed, 0)
+
         return new Promise<void>((resolve) => {
             this.draw(ctx)
-            setTimeout(() => resolve(), this.liveInterval)
+            setTimeout(() => {
+                this.lastFrame = performance.now()
+                resolve()
+            }, wait)
         })
     }
 

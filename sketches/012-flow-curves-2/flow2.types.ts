@@ -54,9 +54,10 @@ export type ToFlowWorker =
     | { type: 'updateGrain'; params: GrainParams }
     | { type: 'update'; params: Partial<FlowParams> }
     | { type: 'regenerate'; live: boolean }
+    | { type: 'regenerate-record' }
 
-export type WorkerStatus = 'generating' | 'generating-live' | 'none'
-export type FromFlowWorker = { type: WorkerStatus }
+export type WorkerStatus = 'generating' | 'generating-live' | 'generating-record' | 'none'
+export type FromFlowWorker = { type: WorkerStatus } | { type: 'frame'; blob: Blob }
 
 export type FlowWorker = Omit<Worker, 'postMessage' | 'onmessage'> & {
     postMessage(msg: ToFlowWorker, transfer?: Transferable[]): void

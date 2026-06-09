@@ -10,8 +10,9 @@ import { createNanoEvents } from 'nanoevents'
 
 type InitParams = Omit<FlowParams, 'width' | 'height'>
 interface FlowClientEvents {
-    busy: (status: 'generating' | 'generating-live') => void
+    busy: (status: 'generating' | 'generating-live' | 'generating-record') => void
     notBusy: (lastTime: number) => void
+    frame: (blob: Blob) => void
 }
 
 export class FlowClient {
@@ -31,6 +32,10 @@ export class FlowClient {
     }
 
     handleMessage(msg: FromFlowWorker) {
+        if (msg.type === 'frame') {
+            this.emitter.emit('frame', msg.blob)
+            return
+        }
         if (msg.type === 'none') {
             if (this.busy) {
                 this.busy = false
@@ -56,6 +61,15 @@ export class FlowClient {
         }
 
         this.worker.postMessage({ type: 'regenerate', live })
+    }
+
+    regenerateForRecording() {
+        if (this.busy) {
+            this.pending = true
+            return
+        }
+
+        this.worker.postMessage({ type: 'regenerate-record' })
     }
 
     update(params: Partial<FlowParams>) {
