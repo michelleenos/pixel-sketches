@@ -4,13 +4,13 @@ import type { FlowPalette } from './flow2.types'
 
 export const palettes = getPaletteVariants({
     isolateColors: true,
-    // minContrastBg: 1.5,
-    // minColors: 3,
+    minContrastBg: 1.5,
+    minColors: 3,
     // includePalettes: ['market', 'magritte', 'earthGem2', 'autmn', 'glowFish', 'harimau'],
-    // bgColor: {
-    //     type: 'edge',
-    //     edge: 20,
-    // },
+    bgColor: {
+        type: 'edge',
+        edge: 20,
+    },
 })
 
 export const palettesByName = Object.fromEntries(palettes.map((p) => [p.name, p]))
