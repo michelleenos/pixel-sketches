@@ -93,8 +93,6 @@ f.add(params, 'stepLength', 0.1, 30, 0.1)
 f.add(params, 'maxSteps', 1, 2000, 1)
 f.add(params, 'minSteps', 1, 1000, 1)
 f.add(params, 'minSpace', 1, 100, 1)
-f.add(params, 'maxFailsMax', 10, 2000, 1)
-f.add(params, 'maxFailsMin', 10, 2000, 1)
 f.onFinishChange(() => {
     if (guiRefreshing) return
     console.log('send update from flow folder')
@@ -181,21 +179,9 @@ const actions = {
     },
 }
 
-gui.add({ preset: '' }, 'preset', flowPresets).onChange((val: any) => {
-    if (guiRefreshing) return
-    guiRefreshing = true
-    console.log('load preset', val)
-    gui.load(val)
-    sendUpdate()
-    console.log('regenerating from load preset fn')
-    regenerate()
-    guiRefreshing = false
-})
-
 gui.add(params, 'liveInterval', 1, 200, 1)
 gui.add(actions, 'regenerateLive')
 gui.add(actions, 'regenerate')
-gui.add(actions, 'saveConfig')
 gui.add(actions, 'save')
 
 if (USE_MISH_CONTROLS) {
@@ -204,11 +190,25 @@ if (USE_MISH_CONTROLS) {
     f.add(params, 'qtCapacity', 4, 40, 1)
     f.add(params, 'scale', 0, 0.01, 0.0001)
     f.add(params, 'offset', 0, 50, 1)
+    f.add(params, 'maxFailsMax', 10, 2000, 1)
+    f.add(params, 'maxFailsMin', 10, 2000, 1)
 
     drf.add(params, 'taperEase', Object.keys(easing))
     drf.add(params, 'brightenMin', -2, 2, 0.1)
     drf.add(params, 'brightenMax', -2, 2, 0.1)
     drf.add(params, 'showColors')
+
+    gui.add(actions, 'saveConfig')
+    gui.add({ preset: '' }, 'preset', flowPresets).onChange((val: any) => {
+        if (guiRefreshing) return
+        guiRefreshing = true
+        console.log('load preset', val)
+        gui.load(val)
+        sendUpdate()
+        console.log('regenerating from load preset fn')
+        regenerate()
+        guiRefreshing = false
+    })
 }
 
 // *************** Initialize *************** //

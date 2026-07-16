@@ -1,7 +1,3 @@
-## general to-do
-
-- [ ] prettier index page
-
 ## sketches to add
 
 - [ ] circlewaves - other designs (0212)
@@ -10,7 +6,6 @@
 - [x] noisy circles
 - [ ] "mathy" circles (1012)
 - [x] screen/mandalas (1025)
-- [ ] maybe flow field (1109)
 - [ ] more mandala type things (1112)
 - [ ] possibly something with drunkard's path
 - [ ] pixel paint? (0210)
